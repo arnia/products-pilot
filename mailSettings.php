@@ -1,11 +1,12 @@
 <?php
-    require '/mailer1/PHPMailerAutoload.php';
+    require '/mailer/PHPMailerAutoload.php';
     $mail = new PHPMailer;
     //$mail->SMTPDebug = 3;                               // Enable verbose debug output
     $mail->isSMTP();                                      // Set mailer to use SMTP
     $mail->SMTPAuth = true;                               // Enable SMTP authentication
 
     include_once 'connect.php';
+    include_once 'cript_decript.php';
 
     $query="select smtp_config from mailsetting";
     $result=$mysqli->query($query) or die("<div class='alert alert-danger'>
@@ -19,8 +20,10 @@
     }
     else{
         die("<div class='alert alert-danger'>
-            <strong>Error:</strong>Setting not found
-            </div>");
+            <strong>Error:</strong>Mail Setting not found
+            </div>
+            <a href='mailform.php' type='button' class='btn btn-primary btn-md'>SET UP MailSettings</a>");
+
     }
 
     //var_dump($cfg);
@@ -29,7 +32,7 @@
     $mail->Port = $cfg->port;                                    // TCP port to connect to
     $mail->SMTPSecure = $cfg->stype;                            // Enable TLS encryption, `ssl` also accepted
     $mail->Username = $cfg->email;                // SMTP username
-    $mail->Password = $cfg->password;                           // SMTP password
+    $mail->Password = decript($cfg->password,"CIO");                           // SMTP password
 
 
     $mail->From = $mail->Username;
