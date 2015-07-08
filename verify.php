@@ -25,7 +25,7 @@
     <?php
     require_once("connect.php");
     include("User.php");
-    $root = "/product_crud";
+    $root = "/products_pilot";
     if(isset($_GET['email']) && !empty($_GET['email']) &&
        isset($_GET['hash']) && !empty($_GET['email'])){
         $email=$mysqli->escape_string($_GET['email']);

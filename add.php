@@ -1,5 +1,5 @@
 <?php
-$root="/product_crud";
+$root="/products_pilot";
 session_start();
 if((isset($_COOKIE['user_auth']) && !empty($_COOKIE['user_auth'])) || (isset($_SESSION['user_auth']) && !empty($_SESSION['user_auth'])) ) {
     require_once("connect.php");

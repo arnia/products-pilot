@@ -23,7 +23,7 @@
 <body>
 <div id="main">
     <?php
-    $root="http://localhost/product_crud";
+    $root="http://localhost/products_pilot";
     require_once("connect.php");
     if(isset($_POST['email']) && !empty($_POST['email'])){
         $email=$_POST['email'];

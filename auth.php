@@ -22,7 +22,7 @@
 <div id="main">
     <?php
     require_once("connect.php");
-    $root = "/product_crud";
+    $root = "/products_pilot";
     if(isset($_POST['email']) && !empty($_POST['email']) && isset($_POST['password']) && !empty($_POST['password'])){
 
             $email=$mysqli->escape_string($_POST['email']);
