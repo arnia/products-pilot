@@ -23,7 +23,9 @@ class ProductsController extends Controller{
             $this->Product->setName($_POST['name']);
             $this->Product->setPrice($_POST['price']);
             $this->Product->setType($_POST['type']);
-            $this->Product->setFile(basename($_FILES["file"]["name"]));
+            if(isset($_FILES["file"]["name"]))  $this->Product->setFile(basename($_FILES["file"]["name"]));
+            else $this->Product->setFile('default');
+
             if ($this->Product->getId()) {
                 if($this->Product->update()) $this->set('succes',true);
                 else $this->set('succes',false);

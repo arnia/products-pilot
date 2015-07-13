@@ -23,7 +23,7 @@ if(isset($product->file)&&!empty($product->file)) {
                 <button type="button" class="btn btn-danger btn-sm" onclick="delete_file(\''.$product->file.'\')" id="file_button" >Delete</button>';
 }
 else {
-    echo "<input type='file' name='file' accept=''.txt,.pdf,.doc,.docx''><br>";
+    echo "<input type='file' name='file' accept='.txt,.pdf,.doc,.docx' ><br>";
 }
 ?>
 <input type='hidden' name='id' value='<?php if(isset($product->id)) echo $product->id?>'>

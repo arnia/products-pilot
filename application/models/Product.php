@@ -33,16 +33,42 @@ class Product extends Model {
     }
 
     public function add_new(){
+        $fileExtension = pathinfo($this->file, PATHINFO_EXTENSION);
+        $allowedExt = array('txt', 'pdf', 'doc', 'docx');
+        if (in_array($fileExtension, $allowedExt) || $this->file == NULL) {
+            $completPath = UPLOAD . $this->file;
+            if (!file_exists($completPath) && isset($_FILES["file"]["tmp_name"])) {
+                move_uploaded_file($_FILES["file"]["tmp_name"], $completPath);
+            }
+        } else return null;
+
         $type_id = $this->getTypeId($this->type);
         $query = "insert into products(name,type_id,price,file) values ('$this->name',$type_id,$this->price,'$this->file');";
         return $this->query($query);
     }
 
     public function update(){
-        $type_id = $this->getTypeId($this->type);
-        $query = "update product set name='$this->name', type_id=$type_id, price=$this->price, file='$this->file'
-                  where id=$this->id";
-        return $this->query($query);
+
+        if($this->file){
+            if($this->file=='default'){
+                $type_id = $this->getTypeId($this->type);
+                $query = "update products set name='$this->name', type_id=$type_id, price=$this->price
+                      where id=$this->id";
+                return $this->query($query);
+            }
+            $fileExtension = pathinfo($this->file, PATHINFO_EXTENSION);
+            $allowedExt = array('txt', 'pdf', 'doc', 'docx');
+            if (in_array($fileExtension, $allowedExt)) {
+                $completPath = UPLOAD . $this->file;
+                if (!file_exists($completPath) && isset($_FILES["file"]["tmp_name"])) {
+                    move_uploaded_file($_FILES["file"]["tmp_name"], $completPath);
+                }
+            } else return null;
+        }
+            $type_id = $this->getTypeId($this->type);
+            $query = "update products set name='$this->name', type_id=$type_id, price=$this->price, file='$this->file'
+                      where id=$this->id";
+            return $this->query($query);
     }
 
     public function getAllProducts(){
@@ -55,15 +81,14 @@ class Product extends Model {
         if ($file != NULL) {
             $query = "SELECT id FROM products where file='" .$this->_mysqli->real_escape_string($file). "';";
             $this->query($query);
-            if ($this->getNumRows() <= 1) {
+            if ($this->_result->num_rows <= 1) {
                 $completPath = UPLOAD . $file;
                 if(file_exists($completPath)) unlink($completPath);
             }
         }
         $query = "delete from products where id=" .$this->_mysqli->real_escape_string($id). ";";
-
         $this->query($query);
-
+        //$this->freeResult();
     }
 
     public function select($id){

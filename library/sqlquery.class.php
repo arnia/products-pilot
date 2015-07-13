@@ -83,31 +83,17 @@ class SQLQuery {
 
             if($singleResult) {
                 $result = $this->_result->fetch_object();
-                $this->freeResult();
                 return $result;
             }
 
             while($product = $this->_result->fetch_object()){
                 $result[$i++]=$product;
             }
-            //var_dump($result);
-            $this->freeResult();
             return $result;
         }
         return $this->_result;
     }
 
-    /** Get number of rows **/
-    function getNumRows() {
-         if($this->_result) $this->_result->num_rows;
-        return 0;
-    }
-
-    /** Free resources allocated by a query **/
-
-    function freeResult() {
-        $this->_result->free_result();
-    }
 
     /** Get error string **/
 
