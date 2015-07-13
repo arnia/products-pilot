@@ -7,14 +7,30 @@ class User extends Model{
     private $hash;
     private $verified;
 
-    public function __construct($email, $password, $hash, $verified)
+    public function __construct($params = NULL)
     {
-        parent::_construct();
-        $this->email = $email;
-        $this->password = $password;
-        $this->hash = $hash;
-        $this->verified = $verified;
+
+        parent::__construct();
+
+        if(isset($params['email'])){
+            $this->email = $params['email'];
+        }
+        if(isset($params['password'])){
+            $this->password = $params['password'];
+        }
+        if(isset($params['hash'])){
+            $this->hash = $params['hash'];
+        }
+        if(isset($params['verified'])){
+            $this->verified = $params['verified'];
+        }
     }
+
+
+
+
+
+
     /**
      * @return mixed
      */

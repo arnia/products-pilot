@@ -4,6 +4,8 @@ class ProductsController extends Controller{
     public function viewall(){
         $this->set('title','Products');
         $this->set('products',$this->Product->getAllProducts());
+
+        $this->_template->render();
     }
     public function add_edit($id=NULL){
         $this->set('title','Add a new product or Delete a product');
@@ -11,13 +13,17 @@ class ProductsController extends Controller{
         $this->set('controller',$this->_controller);
         if ($id) $this->set('new',false);
             else $this->set('new',true);
+
+        $this->_template->render();
     }
     public function delete($id,$file){
-        $this->set('title','Delete a product');
+        $this->set('title','');
         $this->Product->delete($id,$file);
+        //header("Location:". ROOT . '/' . $this->_controller .'/viewall');
+        //exit();
+        $this->_template->render();
     }
     public function save(){
-        $this->set('title','Save a product');
         if(isset($_POST['type'])&&isset($_POST['name'])&&isset($_POST['price'])) {
             $this->Product->setId($_POST['id']);
             $this->Product->setName($_POST['name']);
@@ -35,6 +41,7 @@ class ProductsController extends Controller{
                     else $this->set('succes',false);
                 }
         }
+        header("Location:".'viewall');
+        exit();
     }
-
 }

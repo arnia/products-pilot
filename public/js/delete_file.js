@@ -1,10 +1,11 @@
-function delete_file(file){
+function delete_file(file,domain){
     var r = confirm("Are you sure you want to delete this file?");
     if(r == true)
     {
         $.ajax({
-            url: 'del.php',
-            data: {'file' : file }
+            url: domain + '/script/del.php',
+            data: {'file' : file},
+            type: 'POST'
         });
 
         var x = document.getElementById("file_link");

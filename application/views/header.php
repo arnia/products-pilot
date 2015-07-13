@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title> <?php echo $title ?></title>
+    <title> <?php if(isset($title)) echo $title; else echo "Products" ?></title>
 
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">

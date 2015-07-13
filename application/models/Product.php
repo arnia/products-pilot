@@ -9,7 +9,9 @@ class Product extends Model {
     private $file;
 
     public function __construct($params=NULL){
+
         parent::__construct();
+
         if(isset($params['id'])){
             $this->id = $params['id'];
         }
@@ -88,7 +90,6 @@ class Product extends Model {
         }
         $query = "delete from products where id=" .$this->_mysqli->real_escape_string($id). ";";
         $this->query($query);
-        //$this->freeResult();
     }
 
     public function select($id){

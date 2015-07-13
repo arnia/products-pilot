@@ -27,7 +27,7 @@ if ($products) {
            echo "<td>" . $product->price . "</td>";
            echo "<td><a href=" .$product->file. " download>" . $product->file . "</a></td>";
            echo "<td>
-           <form  action='delete/". $product->id ."/". $product->file ."' onsubmit='validateForm()'>
+           <form  id = 'del_form' action='delete/". $product->id ."/". $product->file ."' onsubmit='validateForm()'>
            <input type='submit' class='btn btn-danger'  value='Delete'>
            </form>
                </td>";

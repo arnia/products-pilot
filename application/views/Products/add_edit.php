@@ -20,7 +20,7 @@ if(isset($product->file)&&!empty($product->file)) {
 
     //var_dump($file);
     echo '<a href = "'.$product->file.'" id="file_link" download >'.$product->file.'</a>
-                <button type="button" class="btn btn-danger btn-sm" onclick="delete_file(\''.$product->file.'\')" id="file_button" >Delete</button>';
+                <button type="button" class="btn btn-danger btn-sm" onclick="delete_file(\''.$product->file.'\',\''.DOMAIN.'\')" id="file_button" >Delete</button>';
 }
 else {
     echo "<input type='file' name='file' accept='.txt,.pdf,.doc,.docx' ><br>";
