@@ -27,9 +27,36 @@ class User extends Model{
     }
 
 
+    public function auth($email,$password){
+        $email=$this->_mysqli->escape_string($_POST['email']);
+        $password=$this->_mysqli->escape_string(md5($_POST['password']));
 
+        $query="select id,verified from users where email='$email' and password='$password' and verified=1;";
+        $this->query($query);
 
+        if($this->_result->num_rows==1) {
+            if(isset($_POST['checkbox']) && !empty($_POST['checkbox']) && $_POST['checkbox']==1){
+                setcookie("user_auth",$email,mktime()+(3600*24),"/");
+            }
+            else{
+                session_start();
+                $_SESSION['user_auth'] = $email;
+            }
+            return null;
+        }
+        else{
+            $query="select verified from users where email='$email' and verified=0;";
+            $result=$this->_mysqli->query($query);
+            if($result->num_rows==1) {
+                return "Email is not verified";
+            }
+            else{
+                return "Incorrect email or password";
+            }
 
+        }
+        return "Database Error";
+    }
 
     /**
      * @return mixed

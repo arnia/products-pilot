@@ -1,3 +1,3 @@
 <?php
-    header("Location:".'../../viewall');
+    header("Location:".'viewall');
     exit();

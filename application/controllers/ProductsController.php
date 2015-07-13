@@ -4,6 +4,7 @@ class ProductsController extends Controller{
     public function viewall(){
         $this->set('title','Products');
         $this->set('products',$this->Product->getAllProducts());
+        $this->set('controller',$this->_controller);
 
         $this->_template->render();
     }
@@ -16,7 +17,9 @@ class ProductsController extends Controller{
 
         $this->_template->render();
     }
-    public function delete($id,$file){
+    public function delete(){
+        $id = $_POST['id'];
+        $file = $_POST['file'];
         $this->set('title','');
         $this->Product->delete($id,$file);
         //header("Location:". ROOT . '/' . $this->_controller .'/viewall');
@@ -41,7 +44,9 @@ class ProductsController extends Controller{
                     else $this->set('succes',false);
                 }
         }
-        header("Location:".'viewall');
+
+        $path = Router::buildPath(array($this->_controller,'viewall'));
+        header("Location:" . $path);
         exit();
     }
 }

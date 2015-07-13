@@ -1,6 +1,6 @@
 <?php  //var_dump($product); ?>
 
-<form action='<?php echo DOMAIN . '/' . $controller ?>/save' method='post' enctype='multipart/form-data' >
+<form action='<?php echo Router::buildPath(array($controller,'save')) ?>' method='post' enctype='multipart/form-data' >
     <fieldset id="update_form">
         <legend>Add Product</legend>
         <label>Name</label>
@@ -31,4 +31,4 @@ else {
 <button type='submit' class='btn btn-success'><?php if($new) echo "Add";else echo "Update" ?></button>
 </fieldset>
 </form>
-<a href='<?php echo DOMAIN . '/' . $controller ?>/viewall' type='button' class='btn btn-primary btn-md'>List of products</a>
+<a href='<?php echo Router::buildPath(array($controller,'viewall')) ?>' type='button' class='btn btn-primary btn-md'>List of products</a>

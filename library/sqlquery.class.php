@@ -50,34 +50,7 @@ class SQLQuery {
         $this->_result = $this->_mysqli->query($query); //Execute query
         //var_dump($this->_mysqli->error_list);
         if (preg_match("/select/i",$query) && $this->_result ) {
-            /*
-            $result = array();
-            $table = array();
-            $field = array();
-            $tempResults = array();
-            $numOfFields = $this->_mysqli->field_count;
-            for ($i = 0; $i < $numOfFields; ++$i) {
-                array_push($table,$this->_result->fetch_field_direct($i)->table);
-                array_push($field,$this->_result->fetch_field_direct($i)->name);
-            }
 
-            while ($row = $this->_result->fetch_row()) {
-                for ($i = 0;$i < $numOfFields; ++$i) {
-                    $table[$i] = trim(ucfirst($table[$i]),"s");
-                    $tempResults[$table[$i]][$field[$i]] = $row[$i];
-                }
-                if ($singleResult == 1) {
-                    $this->_result->free_result;
-                    //$json = json_encode($tempResults);
-                    return $tempResults;
-                }
-                array_push($result,$tempResults);
-                var_dump($result);
-            }
-            $this->freeResult();
-            //$json = json_encode($result);
-            return $result;
-            */
             $result = array();
             $i= 0;
 
