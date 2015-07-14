@@ -65,7 +65,6 @@
             <p>-----------------------</p>
             <p><a href='http://localhost/product_crud/verify.php?email=$email&hash=$hash'>Click Here</a> to activate your account</p>";
 
-
             //$send = mail($email, $subject, $message, $headers) or die("Error to send mail");
             $mail->isHTML(true);                                  // Set email format to HTML
             $mail->addAddress($email);

@@ -3,7 +3,7 @@ if($error) echo "<div class='alert alert-danger' style='margin-top:10px'>
         <strong>Error:</strong> " . $error ."
         </div>";
 ?>
-<form role="form" action="<?php echo Router::buildPath(array($controller,'addsmtp')) ?>" method="post">
+<form role="form" action="<?php echo Router::buildPath(array($controller,'add')) ?>" method="post">
     <div class="form-group">
         <label for="text">SMTP Host</label>
         <input type="text" class="form-control" id="host" name="host" value="smtp.gmail.com" required>

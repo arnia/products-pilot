@@ -27,21 +27,27 @@ class User extends Model{
     }
 
 
-    public function auth($email,$password){
-        $email=$this->_mysqli->escape_string($_POST['email']);
-        $password=$this->_mysqli->escape_string(md5($_POST['password']));
+    public function auth($email,$password,$checkbox = 0){
+        $email = $this->_mysqli->escape_string($email);
+        $password = md5($this->_mysqli->escape_string($password));
 
-        $query="select id,verified from users where email='$email' and password='$password' and verified=1;";
-        $this->query($query);
+        $query="select id from users where email='$email' and password='$password' and verified=1;";
+
+        if(!$this->query($query)) return "Incorrect email or password or database error";
 
         if($this->_result->num_rows==1) {
-            if(isset($_POST['checkbox']) && !empty($_POST['checkbox']) && $_POST['checkbox']==1){
+            if (session_status() == PHP_SESSION_NONE) {
+                session_start();
+            }
+            if($checkbox == 1){
                 setcookie("user_auth",$email,mktime()+(3600*24),"/");
             }
             else{
-                session_start();
                 $_SESSION['user_auth'] = $email;
             }
+
+            $_SESSION['user_key'] = md5(rand(1,1000));
+
             return null;
         }
         else{
@@ -53,11 +59,58 @@ class User extends Model{
             else{
                 return "Incorrect email or password";
             }
-
         }
         return "Database Error";
     }
 
+    public function add(){
+        if(isset($this->email) && isset($this->password) && isset($this->hash)){
+
+            $this->email = $this->_mysqli->real_escape_string($this->email);
+            $this->password = md5($this->_mysqli->real_escape_string($this->password));
+
+            $query="insert into users(email,password,hash) values ('$this->email','$this->password','$this->hash');";
+            $result = $this->query($query);
+            $this->id = $this->_mysqli->insert_id;
+            return $result;
+        }
+        return null;
+    }
+    public function delete(){
+        if(isset($this->id)){
+            $query = "delete from users where id=" .$this->_mysqli->real_escape_string($this->id) ;
+            return $this->query($query);
+        }
+        return null;
+    }
+
+    public function verify($email, $hash){
+        $email=$this->_mysqli->escape_string($email);
+        $hash=$this->_mysqli->escape_string($hash);
+
+        $query="select id from users where email='$email' and hash='$hash' and verified=0;";
+
+        if(!$this->query($query)) return 'The url is either invalid or you already have activated your account.';
+
+        if($this->_result->num_rows==1) {
+            $query="update users set verified=1 where email='$email' and hash='$hash' and verified=0;";
+            if ($this->query($query)) return 'Your account has been activated';
+            else return 'Error to verified';
+        }
+        else{
+            return 'The url is either invalid or you already have activated your account.';
+        }
+    }
+
+    public static function isAuth(){
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+        if((isset($_COOKIE['user_auth']) && !empty($_COOKIE['user_auth'])) || (isset($_SESSION['user_auth']) && !empty($_SESSION['user_auth'])) ) {
+            return true;
+        }
+        return false;
+    }
     /**
      * @return mixed
      */

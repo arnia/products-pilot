@@ -69,8 +69,8 @@ function __autoload($className) {
         require_once(ROOT . DS . 'application' . DS . 'controllers' . DS . strtolower($className) . '.php');
     } elseif (file_exists(ROOT . DS . 'application' . DS . 'models' . DS . strtolower($className) . '.php')) {
         require_once(ROOT . DS . 'application' . DS . 'models' . DS . strtolower($className) . '.php');
-    } elseif (file_exists(ROOT . DS . 'library/mailer' . DS . 'models' . DS . strtolower($className) . '.php')) {
-            require_once(ROOT . DS . 'library/mailer' . DS . 'models' . DS . strtolower($className) . '.php');
+    } elseif (file_exists(ROOT . DS . 'library' . DS . 'mailer' . DS . 'class.' . strtolower($className) . '.php')) {
+            require_once(ROOT . DS . 'library' . DS . 'mailer' . DS . 'class.' . strtolower($className) . '.php');
     } else {
         /* Error Generation Code Here */
     }

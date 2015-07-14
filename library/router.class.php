@@ -53,6 +53,11 @@ class Router
         return DOMAIN . '/' . implode('/', $args);
     }
 
+    static public function go($args){
+        header("Location:". DOMAIN . '/' . implode('/', $args));
+        exit();
+    }
+
     public function getController()
     {
         return $this->controller;

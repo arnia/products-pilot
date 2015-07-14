@@ -1,3 +1,9 @@
+<?php
+if($error) echo "<div class='alert alert-danger' style='margin-top:10px'>
+        <strong>Error:</strong> " . $error ."
+        </div>";
+?>
+
 <form role="form" action="<?php echo Router::buildPath(array($controller,'signupadd')) ?>" method="post">
     <div class="form-group">
         <label for="email">Email address:</label>
@@ -13,5 +19,5 @@
     </div>
 
     <button type="submit" class="btn btn-default">SignUp</button>
-    <a href="<?php echo Router::buildPath(array($controller,'login')) ?>" style="display:block; margin-top:20px;" class="btn btn-info">LogIn</a>
+    <a href="<?php echo Router::buildPath(array($controller,'login')) ?>" style="width: 50%; display:block; margin-top:20px;" class="btn btn-info">LogIn</a>
 </form>

@@ -11,14 +11,8 @@
         #main{
             margin:auto;
             margin-top: 200px;
-            width: 10%;
+            width: 17%;
         }
-        #toright{
-            margin-left:auto;
-            margin-right: 0;
-            width: 10%;
-        }
-
     </style>
 </head>
 <body>

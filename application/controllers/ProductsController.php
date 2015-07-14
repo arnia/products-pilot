@@ -1,21 +1,39 @@
 <?php
 
 class ProductsController extends Controller{
-    public function viewall(){
-        $this->set('title','Products');
-        $this->set('products',$this->Product->getAllProducts());
-        $this->set('controller',$this->_controller);
 
+    private function gotologin(){
+        $this->_template = new Template($this->_controller,'gotologin');
+        $this->set('title','GoToLogin');
+        $this->set('controller',$this->_controller);
         $this->_template->render();
     }
+
+    public function viewall(){
+        if(!User::isAuth()){
+            $this->gotologin();
+        }
+        else{
+            $this->set('title','Products');
+            $this->set('products',$this->Product->getAllProducts());
+            $this->set('controller',$this->_controller);
+
+            $this->_template->render();
+        }
+    }
     public function add_edit($id=NULL){
-        $this->set('title','Add a new product or Delete a product');
-        $this->set('product',$this->Product->select($id));
-        $this->set('controller',$this->_controller);
-        if ($id) $this->set('new',false);
+        if(!User::isAuth()){
+            $this->gotologin();
+        }
+        else {
+            $this->set('title','Add a new product or Delete a product');
+            $this->set('product',$this->Product->select($id));
+            $this->set('controller',$this->_controller);
+            if ($id) $this->set('new',false);
             else $this->set('new',true);
 
-        $this->_template->render();
+            $this->_template->render();
+        }
     }
     public function delete(){
         $id = $_POST['id'];

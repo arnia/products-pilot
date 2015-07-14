@@ -28,6 +28,34 @@ class Mailsetting extends Model{
         }
     }
 
+    public function get(){
+        $query="select smtp_config from mailsettings";
+        $result = $this->query($query,1);
+
+        if($this->_result->num_rows>=1){
+            $cfg = json_decode($result->smtp_config);
+
+            $mail = new PHPMailer;
+            $obj = new Cript();
+
+            $mail->isSMTP();                                      // Set mailer to use SMTP
+            $mail->SMTPAuth = true;                               // Enable SMTP authentication
+
+            $mail->Host = $cfg->host;  // Specify main and backup SMTP servers
+            $mail->Port = $cfg->port;                                    // TCP port to connect to
+            $mail->SMTPSecure = $cfg->stype;                            // Enable TLS encryption, `ssl` also accepted
+            $mail->Username = $cfg->email;                // SMTP username
+            $mail->Password = $obj->decript($cfg->password);                           // SMTP password
+
+            $mail->From = $mail->Username;
+            $mail->FromName = 'Account Product_crud';
+
+            $mail->addReplyTo($mail->From, $mail->FromName);
+
+            return $mail;
+        }
+        return null;
+    }
 
     public function add($json){
         $query = "insert into mailsettings (smtp_config) values ('$json');";

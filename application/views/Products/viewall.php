@@ -1,5 +1,4 @@
-<a href='' type='button' class='btn btn-default btn-md'>Log Out</a>
-<a href='' type='button' class='btn btn-default btn-md'>Change Password</a>
+<a href='<?php echo Router::buildPath(array('users','account_settings')) ?>' type='button' class='btn btn-default btn-md'>Account Settings</a>
 <div id='toright'>
     <a href='<?php echo Router::buildPath(array($controller,'add_edit')) ?>' class='btn btn-success'>Add New</a>
 </div>
