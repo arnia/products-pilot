@@ -36,18 +36,6 @@ class User extends Model{
         if(!$this->query($query)) return "Incorrect email or password or database error";
 
         if($this->_result->num_rows==1) {
-            if (session_status() == PHP_SESSION_NONE) {
-                session_start();
-            }
-            if($checkbox == 1){
-                setcookie("user_auth",$email,mktime()+(3600*24),"/");
-            }
-            else{
-                $_SESSION['user_auth'] = $email;
-            }
-
-            $_SESSION['user_key'] = md5(rand(1,1000));
-
             return null;
         }
         else{
@@ -102,15 +90,7 @@ class User extends Model{
         }
     }
 
-    public static function isAuth(){
-        if (session_status() == PHP_SESSION_NONE) {
-            session_start();
-        }
-        if((isset($_COOKIE['user_auth']) && !empty($_COOKIE['user_auth'])) || (isset($_SESSION['user_auth']) && !empty($_SESSION['user_auth'])) ) {
-            return true;
-        }
-        return false;
-    }
+
     /**
      * @return mixed
      */

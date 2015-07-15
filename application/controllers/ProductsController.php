@@ -10,7 +10,7 @@ class ProductsController extends Controller{
     }
 
     public function viewall(){
-        if(!User::isAuth()){
+        if(!$this->_session->isAuth()){
             $this->gotologin();
         }
         else{
@@ -22,7 +22,7 @@ class ProductsController extends Controller{
         }
     }
     public function add_edit($id=NULL){
-        if(!User::isAuth()){
+        if(!$this->_session->isAuth()){
             $this->gotologin();
         }
         else {

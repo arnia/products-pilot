@@ -14,26 +14,21 @@ function setReporting() {
     }
 }
 
+function initSession(){
+
+    $session = SecureSessionHandler::getInstance("CIO");
+
+    ini_set('session.save_handler', 'files');
+    session_set_save_handler($session, true);
+    session_save_path(SESSIONS);
+
+    return $session;
+}
+
 /** Main Call Function **/
 
 function Main() {
     global $url;
-    /*
-    $urlArray = array();
-    $urlArray = explode("/",$url);
-    $controller = $urlArray[0];
-    array_shift($urlArray);
-    $action = $urlArray[0];
-    array_shift($urlArray);
-    $queryString = $urlArray;
-    //var_dump($queryString);
-    $controllerName = $controller;
-    $controller = ucwords($controller);
-    $model = rtrim($controller, 's');
-    $controller .= 'Controller';
-    $dispatch = new $controller($model,$controllerName,$action);
-    */
-
 
     $router = new Router($url);
     $router->parse();
@@ -47,11 +42,13 @@ function Main() {
        $router->setDefaultAction('index');
      */
 
+    $session = initSession();
+
     $controllerName = $controller;
     $controller = ucwords($controller);
     $model = rtrim($controller, 's');
     $controller .= 'Controller';
-    $dispatch = new $controller($model,$controllerName,$action);
+    $dispatch = new $controller($model,$controllerName,$action,$session);
 
     if ((int)method_exists($controller, $action)) {
         call_user_func_array(array($dispatch,$action),$arguments);

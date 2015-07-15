@@ -1,9 +1,9 @@
 <?php
-if($error) echo "<div class='alert alert-danger' style='margin-top:10px'>
+if(isset($error)) echo "<div class='alert alert-danger' style='margin-top:10px'>
                 <strong>Error:</strong> " . $error ."
                 </div>";
-if(isset($succes)) echo "<div class='alert alert-info' style='margin-top:10px'>
-                 <strong>Info:</strong> " . $succes ."
+if(isset($success)) echo "<div class='alert alert-info' style='margin-top:10px'>
+                 <strong>Info:</strong> " . $success ."
                  </div>";
 ?>
 

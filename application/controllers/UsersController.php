@@ -2,41 +2,48 @@
 
 class UsersController extends Controller{
 
-    public function login($error = NULL){
+    public function login(){
         $this->set('controller',$this->_controller);
         $this->set('title','Login');
-        $this->set('error',$error);
-        if(isset($_GET['succes'])) $this->set('succes',$_GET['succes']);
+
+        if($success = $this->_session->getDelete('success')) $this->set('success',$success);
+        if($error = $this->_session->getDelete('error')) $this->set('error',$error);
 
         $this->_template->render();
     }
-    public function auth(){
+    public function auth()
+    {
 
         $error = '';
 
-        if(isset($_POST['email']) && !empty($_POST['email']) && isset($_POST['password']) && !empty($_POST['password'])){
+        if (isset($_POST['email']) && !empty($_POST['email']) && isset($_POST['password']) && !empty($_POST['password'])) {
             $email = $_POST['email'];
             $password = $_POST['password'];
 
-            if(isset($_POST['checkbox'])) $checkbox = 1;
+            if (isset($_POST['checkbox'])) $checkbox = 1;
             else $checkbox = 0;
 
-            $error = $this->User->auth($email,$password,$checkbox);
+            $error = $this->User->auth($email, $password, $checkbox);
 
-            if(!$error){
+            if (!$error) {
 
-                $path = Router::buildPath(array('products','viewall'));
-                header("Location:$path");
-                exit();
+                if ($checkbox == 1) {
+                    setcookie("user_auth", $email, mktime() + (3600 * 24), "/sessions");
+                } else {
+                    $this->_session->forget();
+                    $this->_session->start();
+
+                    $this->_session->put('user.email', $email);
+                }
+
+                Router::go(array('products', 'viewall'));
             }
-        }
-        else{
+        } else {
             $error = "All fields are required";
         }
 
-        $path = Router::buildPath(array($this->_controller,'login',$error));
-        header("Location:" . $path);
-        exit();
+        $this->_session->put('error',$error);
+        Router::go(array($this->_controller, 'login'));
     }
 
     public function signup($error = NULL){
@@ -139,16 +146,21 @@ class UsersController extends Controller{
         }
     }
 
-    public function logout($user_key = null){
-        if($this->auth_key($user_key) and $user_key){
-            if((isset($_COOKIE['user_auth']) && !empty($_COOKIE['user_auth'])) || (isset($_SESSION['user_auth']) && !empty($_SESSION['user_auth'])) ) {
-                if((isset($_COOKIE['user_auth']) && !empty($_COOKIE['user_auth']))){
-                    setcookie("user_auth",null,mktime()-3600,"/");
-                }
-                elseif (isset($_SESSION['user_auth']) && !empty($_SESSION['user_auth'])){
-                    session_destroy();
-                }
-                Router::go(array('users','login?succes=LogOut Successfully'));
+    public function logout(){
+
+        $this->_session->start();
+
+        if($this->_session->isValid()){
+            if($this->_session->get('user.email')) {
+                $this->_session->forget();
+
+                $this->_session->start();
+
+                $this->_session->put('success',session_id());
+
+                //var_dump($this->_session->get('success'));
+
+                Router::go(array('users','login',session_id()));
             }
             else Router::go(array('users','login','You are already logged out'));
         }
@@ -161,38 +173,38 @@ class UsersController extends Controller{
         $this->_template->render();
     }
 
-    public function changepass($user_key){
-        if($this->auth_key($user_key) and !$user_key){
+    public function changepass(){
+        //if($this->_session->isAuth()){
+            $this->_session->start();
+            var_dump($this->_session->get('success'));
+
             $this->set('title','Reset Password');
             $this->set('controller',$this->_controller);
             $this->_template->render();
-        }
-        else Router::go(array('users','login','Error to authorization key'));
+        //}
+        //else {
+            //$this->_session->put('error','Error to authorization key');
+           // Router::go(array('users','login'));
+        //}
     }
 
     public function account_settings(){
-        if(!User::isAuth()){
+        if($this->_session->isAuth()){
             $this->gotologin();
         }
         else{
-            if (session_status() == PHP_SESSION_NONE) {
-                session_start();
-            }
             $this->set('title','Account Settings');
             $this->set('controller',$this->_controller);
-            if(isset($_SESSION['user_key'])) $this->set('user_key',$_SESSION['user_key']);
+
+            $this->_session->forget();
+            var_dump($this->_session->start());
+            $this->_session->put('success',session_id());
+            var_dump($this->_session->get('success'));
 
             $this->_template->render();
         }
     }
 
-    public function auth_key($user_key){
-        if (session_status() == PHP_SESSION_NONE) {
-            session_start();
-        }
-        if (isset($_SESSION['user_key']) && $_SESSION['user_key'] == $user_key) return true;
-        return false;
-    }
     private function gotologin(){
         $this->_template = new Template($this->_controller,'gotologin');
         $this->set('title','GoToLogin');
