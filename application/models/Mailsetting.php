@@ -48,7 +48,7 @@ class Mailsetting extends Model{
             $mail->Password = $obj->decript($cfg->password);                           // SMTP password
 
             $mail->From = $mail->Username;
-            $mail->FromName = 'Account Product_crud';
+            $mail->FromName = 'Account Products_pilot';
 
             $mail->addReplyTo($mail->From, $mail->FromName);
 

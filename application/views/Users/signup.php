@@ -1,8 +1,14 @@
-<?php
-if($error) echo "<div class='alert alert-danger' style='margin-top:10px'>
-        <strong>Error:</strong> " . $error ."
-        </div>";
-?>
+<?php if(isset($error)) { ?>
+    <div class='alert alert-danger' style='margin-top:10px'>
+        <strong>Error:</strong> <?php echo $error ?>
+    </div>
+<?php } ?>
+
+<?php if(isset($success)) { ?>
+    <div class='alert alert-info' style='margin-top:10px'>
+        <strong>Info:</strong> <?php echo $success ?>
+    </div>
+<?php } ?>
 
 <form role="form" action="<?php echo Router::buildPath(array($controller,'signupadd')) ?>" method="post">
     <div class="form-group">

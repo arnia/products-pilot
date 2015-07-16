@@ -33,7 +33,7 @@ class User extends Model{
 
         $query="select id from users where email='$email' and password='$password' and verified=1;";
 
-        if(!$this->query($query)) return "Incorrect email or password or database error";
+        $this->query($query);
 
         if($this->_result->num_rows==1) {
             return null;
@@ -90,6 +90,49 @@ class User extends Model{
         }
     }
 
+    public function rpass(){
+        $this->email = $this->_mysqli->escape_string($this->email);
+        $query="select password from users where email='$this->email'";
+
+        $result = $this->query($query,1);
+        if ($result) $this->password = $result->password;
+
+        if($this->_result->num_rows == 1) {
+            $length = 8;
+            $pass = substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, $length);
+            $m_pass = md5($pass);
+            $query = "update users
+                      set password = '$m_pass'
+                      where email = '$this->email'";
+
+            if($this->query($query)) return $pass;
+            return null;
+        }
+    }
+
+    public function oldpass(){
+        $this->email=$this->_mysqli->escape_string($this->email);
+        $query = "update users
+                set password = '$this->password'
+                where email = '$this->email'";
+        return $this->_mysqli->query($query);
+    }
+
+    public function cpass($oldpassword){
+
+        $this->email = $this->_mysqli->escape_string($this->email);
+        $this->password = md5($this->_mysqli->escape_string($this->password));
+        $oldpassword = md5($this->_mysqli->escape_string($oldpassword));
+
+        $query="select id from users where email = '$this->email' and password = '$oldpassword'";
+
+        $result = $this->query($query,1);
+        if (!$result) return false;
+
+        $query = "update users set password='$this->password' where email = '$this->email' and password = '$oldpassword'";
+
+        return $this->query($query);
+    }
 
     /**
      * @return mixed

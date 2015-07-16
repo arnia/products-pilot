@@ -1,8 +1,8 @@
-<?php
-if($error) echo "<div class='alert alert-danger' style='margin-top:10px'>
-        <strong>Error:</strong> " . $error ."
-        </div>";
-?>
+<?php if(isset($error)) { ?>
+<div class='alert alert-danger' style='margin-top:10px'>
+    <strong>Error:</strong> <?php echo $error ?>
+</div>
+<?php } ?>
 <form role="form" action="<?php echo Router::buildPath(array($controller,'add')) ?>" method="post">
     <div class="form-group">
         <label for="text">SMTP Host</label>

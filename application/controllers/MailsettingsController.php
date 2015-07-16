@@ -1,10 +1,15 @@
 <?php
 
 class MailsettingsController extends Controller{
-    public function setup($error = NULL){
+    public function setup(){
         $this->set('title','SETUP');
         $this->set('controller',$this->_controller);
-        $this->set('error',$error);
+
+        $this->_session->start();
+        if($success = $this->_session->getDelete('success')) $this->set('success',$success);
+        if($error = $this->_session->getDelete('error')) $this->set('error',$error);
+        $this->_session->forget();
+
         $this->_template->render();
     }
 
@@ -27,17 +32,19 @@ class MailsettingsController extends Controller{
                 //var_dump($obj->cript($pass));
                 //var_dump($obj->decript($obj->cript($pass)));
 
-                header("Location:" . Router::buildPath(array('users','login')));
-                exit();
+                Router::go(array('users','login'));
+
             }
             else {
-                header("Location:" . Router::buildPath(array($this->_controller,'setup','Passwords must be identical')));
-                exit();
+                $this->_session->start();
+                $this->_session->put('error', 'Passwords must be identical');
+                Router::go(array($this->_controller, 'setup'));
             }
         }
         else {
-            header("Location:setup/" . "All fields are required");
-            exit();
-        };
+            $this->_session->start();
+            $this->_session->put('error', "All fields are required");
+            Router::go(array($this->_controller, 'setup'));
+        }
     }
 }

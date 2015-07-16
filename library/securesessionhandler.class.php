@@ -63,17 +63,7 @@ class SecureSessionHandler extends Singleton {
 
         $_SESSION = [];
 
-        setcookie(
-            $this->name,
-            '',
-            time() - 42000,
-            $this->cookie['path'],
-            $this->cookie['domain'],
-            $this->cookie['secure'],
-            $this->cookie['httponly']
-        );
-
-        var_dump("forget-> ".session_id());
+        //var_dump("forget-> ".session_id());
 
         return session_destroy();
     }
@@ -143,25 +133,6 @@ class SecureSessionHandler extends Singleton {
         return $result;
     }
 
-    public function put($name, $value)
-    {
-        $parsed = explode('.', $name);
-
-        $session =& $_SESSION;
-
-        while (count($parsed) > 1) {
-            $next = array_shift($parsed);
-
-            if ( ! isset($session[$next]) || ! is_array($session[$next])) {
-                $session[$next] = [];
-            }
-
-            $session =& $session[$next];
-        }
-
-        $session[array_shift($parsed)] = $value;
-    }
-
     public function getDelete($name)
     {
         $parsed = explode('.', $name);
@@ -184,10 +155,66 @@ class SecureSessionHandler extends Singleton {
         return $value;
     }
 
+    public function put($name, $value)
+    {
+        $parsed = explode('.', $name);
+
+        $session =& $_SESSION;
+
+        while (count($parsed) > 1) {
+            $next = array_shift($parsed);
+
+            if ( ! isset($session[$next]) || ! is_array($session[$next])) {
+                $session[$next] = [];
+            }
+
+            $session =& $session[$next];
+        }
+
+        $session[array_shift($parsed)] = $value;
+    }
+
+    public function putc($name, $value, $time = 0.05)
+    {
+         return setcookie(
+            $name,
+            $value,
+            time() + (3600 * $time),
+            $this->cookie['path'],
+            $this->cookie['domain'],
+            $this->cookie['secure'],
+            $this->cookie['httponly']
+        );
+    }
+
+    public function getc($name)
+    {
+
+        if(isset($_COOKIE[$name])) return $_COOKIE[$name];
+
+        return null;
+    }
+
+    public function distroyc($name)
+    {
+        setcookie(
+            $name,
+            null,
+            time() - 3600,
+            $this->cookie['path'],
+            $this->cookie['domain'],
+            $this->cookie['secure'],
+            $this->cookie['httponly']
+        );
+    }
+
     public function isAuth(){
+        if($this->getc('user_email')) return true;
         $this->start();
         if($this->isValid() && $this->get('user.email')) return true;
+
         $this->forget();
+        $this->distroyc('user_email');
         return false;
     }
 }
