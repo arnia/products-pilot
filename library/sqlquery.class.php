@@ -8,7 +8,9 @@ class SQLQuery {
     /** Connects to database **/
 
     function connect($host, $user, $password, $db_name) {
+
         $this->_mysqli = new mysqli($host, $user, $password);
+
         if ($this->_mysqli != null) {
             if ($this->_mysqli->select_db($db_name)) {
                 return 1;

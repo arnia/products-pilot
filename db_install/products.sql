@@ -1,4 +1,4 @@
-create table products(
+create table if not exists products(
             id int(10) primary key auto_increment,
             name varchar(256) not null,
             type_id int(1),

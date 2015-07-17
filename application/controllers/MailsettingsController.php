@@ -2,15 +2,26 @@
 
 class MailsettingsController extends Controller{
     public function setup(){
-        $this->set('title','SETUP');
-        $this->set('controller',$this->_controller);
+        if(!$this->_session->isAdmin()){
+            $this->gotologin();
+        }
+        else {
+            $this->set('title', 'SETUP');
+            $this->set('controller', $this->_controller);
 
+            $this->_session->start();
+            if ($success = $this->_session->getDelete('success')) $this->set('success', $success);
+            if ($error = $this->_session->getDelete('error')) $this->set('error', $error);
+            $this->_session->forget();
+
+            $this->_template->render();
+        }
+    }
+
+    private function gotologin($error = 'previous'){
         $this->_session->start();
-        if($success = $this->_session->getDelete('success')) $this->set('success',$success);
-        if($error = $this->_session->getDelete('error')) $this->set('error',$error);
-        $this->_session->forget();
-
-        $this->_template->render();
+        $this->_session->put('error',"Login to access $error page !");
+        Router::go(array('users','login'));
     }
 
     public function add(){

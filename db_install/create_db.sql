@@ -1,1 +1,1 @@
-create database db_products;
+create database if not exists db_products;

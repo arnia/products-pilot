@@ -2,18 +2,6 @@
 
 /** Check if environment is development and display errors **/
 
-function setReporting() {
-    if (DEVELOPMENT_ENVIRONMENT == true) {
-        error_reporting(E_ALL);
-        ini_set('display_errors','On');
-    } else {
-        error_reporting(E_ALL);
-        ini_set('display_errors','Off');
-        ini_set('log_errors', 'On');
-        ini_set('error_log', ROOT.DS.'tmp'.DS.'logs'.DS.'error.log');
-    }
-}
-
 function initSession(){
 
     $session = SecureSessionHandler::getInstance("CIO");
@@ -25,22 +13,76 @@ function initSession(){
     return $session;
 }
 
+function dbInit(){
+    if( ! DEVELOPMENT_ENVIRONMENT ){
+        mysqli_report(MYSQLI_REPORT_STRICT);
+
+        global $url;
+
+        $router = new Router($url);
+        $router->setDefaultController('dbsettings');
+        $router->setDefaultAction('index');
+        $router->parse();
+
+        $controller = 'dbsettings';
+
+        if($router->getController() != 'dbsettings') {
+            $action = 'index';
+        }
+        else{
+            $action = $router->getAction();
+        }
+
+
+        $arguments = $router->getArguments();
+
+        $session = initSession();
+
+        $controllerName = $controller;
+        $controller = ucwords($controller);
+        $model = rtrim($controller, 's');
+        $controller .= 'Controller';
+        $dispatch = new $controller($model,$controllerName,$action,$session);
+
+        if ((int)method_exists($controller, $action)) {
+            call_user_func_array(array($dispatch,$action),$arguments);
+        } else {
+            /* Error Generation Code Here */
+        }
+
+        return false;
+    }
+    return true;
+}
+
+function setReporting() {
+    if (DEVELOPMENT_ENVIRONMENT == true) {
+        error_reporting(E_ALL);
+        ini_set('display_errors','On');
+        mysqli_report(MYSQLI_REPORT_STRICT);
+    } else {
+        error_reporting(E_ALL);
+        ini_set('display_errors','Off');
+        ini_set('log_errors', 'On');
+        ini_set('error_log', ROOT.DS.'tmp'.DS.'logs'.DS.'error.log');
+    }
+}
+
+
 /** Main Call Function **/
 
 function Main() {
     global $url;
 
     $router = new Router($url);
+    $router->setDefaultController('users');
+    $router->setDefaultAction('index');
     $router->parse();
+
 
     $controller = $router->getController();
     $action = $router->getAction();
     $arguments = $router->getArguments();
-
-    /*
-     * $router->setDefaultController('Index');
-       $router->setDefaultAction('index');
-     */
 
     $session = initSession();
 
@@ -73,5 +115,7 @@ function __autoload($className) {
     }
 }
 
-setReporting();
-Main();
+if (dbInit()) {
+    setReporting();
+    Main();
+}

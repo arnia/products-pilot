@@ -217,4 +217,14 @@ class SecureSessionHandler extends Singleton {
         $this->distroyc('user_email');
         return false;
     }
+
+    public function isAdmin(){
+        if($this->getc('user_admin')) return true;
+
+        if($this->isAuth() && $this->get('user.admin')) return true;
+
+        //var_dump($this->get('user.admin'));
+
+        return false;
+    }
 }

@@ -17,11 +17,15 @@ class ProductsController extends Controller{
             $this->set('products',$this->Product->getAllProducts());
             $this->set('controller',$this->_controller);
 
+            $this->_session->start();
+            $isAdmin = $this->_session->isAdmin();
+            $this->set('isAdmin',$isAdmin);
+
             $this->_template->render();
         }
     }
     public function add_edit($id=NULL){
-        if(!$this->_session->isAuth()){
+        if(!$this->_session->isAdmin()){
             $this->gotologin();
         }
         else {
@@ -35,7 +39,7 @@ class ProductsController extends Controller{
         }
     }
     public function delete(){
-        if(!$this->_session->isAuth()){
+        if(!$this->_session->isAdmin()){
             $this->gotologin();
         }
         else {
@@ -47,7 +51,7 @@ class ProductsController extends Controller{
         }
     }
     public function save(){
-        if(!$this->_session->isAuth()){
+        if(!$this->_session->isAdmin()){
             $this->gotologin();
         }
         else {

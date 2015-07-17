@@ -26,14 +26,30 @@ class User extends Model{
         }
     }
 
+    public function getAllUsers(){
+        $query = "SELECT u.id id, u.email email, u.verified verified, a.id admin_id FROM users u
+                  left join admins a on(u.id = a.user_id);";
+        return $this->query($query);
+    }
 
-    public function auth($email,$password,$checkbox = 0){
+    public function isAdmin($email){
+        $email = $this->_mysqli->escape_string($email);
+        $query = "select email from users u
+                  join admins a on (a.user_id = u.id)
+                  where email = '$email'
+                  ";
+        $result = $this->query($query);
+        if($result) return true;
+        return false;
+    }
+
+    public function auth($email,$password){
         $email = $this->_mysqli->escape_string($email);
         $password = md5($this->_mysqli->escape_string($password));
 
         $query="select id from users where email='$email' and password='$password' and verified=1;";
 
-        $this->query($query);
+        if (!$this->query($query)) return 'Database Error';
 
         if($this->_result->num_rows==1) {
             return null;

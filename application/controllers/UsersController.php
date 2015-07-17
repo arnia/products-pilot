@@ -2,6 +2,23 @@
 
 class UsersController extends Controller{
 
+    public function isAdmin($email){
+        return $this->User->isAdmin($email);
+    }
+
+    public function viewall(){
+        if(!$this->_session->isAdmin()){
+            $this->gotologin();
+        }
+        else{
+            $this->set('title','Users Account');
+            $this->set('controller',$this->_controller);
+            $this->set('users',$this->User->getAllUsers());
+
+            $this->_template->render();
+        }
+    }
+
     public function login(){
         $this->set('controller',$this->_controller);
         $this->set('title','Login');
@@ -32,12 +49,15 @@ class UsersController extends Controller{
                 if ($checkbox == 1) {
 
                     $this->_session->putc('user_email',$email);
+                    if($this->isAdmin($email)) $this->_session->putc('user_admin', $email);
 
                 } else {
                     $this->_session->forget();
                     $this->_session->start();
 
                     $this->_session->put('user.email', $email);
+                    if($this->isAdmin($email)) $this->_session->put('user.admin', $email);
+                    var_dump($this->isAdmin($email));
                 }
 
                 Router::go(array('products', 'viewall'));
@@ -62,7 +82,7 @@ class UsersController extends Controller{
     }
 
     public function signupadd(){
-        if(isset($_POST['email']) && !empty($_POST['email']) &&
+        if( isset($_POST['email']) && !empty($_POST['email']) &&
             isset($_POST['password1']) && !empty($_POST['password1']) &&
             isset($_POST['password2']) && !empty($_POST['password2'])){
 
