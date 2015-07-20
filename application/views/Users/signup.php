@@ -1,6 +1,7 @@
 <?php if(isset($error)) { ?>
     <div class='alert alert-danger' style='margin-top:10px'>
-        <strong>Error:</strong> <?php echo $error ?>
+        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+        <strong></strong> <?php echo $error ?>
     </div>
 <?php } ?>
 

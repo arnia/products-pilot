@@ -2,6 +2,78 @@
 
 class UsersController extends Controller{
 
+
+    public function delete(){
+        if(!$this->_session->isAdmin()){
+            $this->gotologin();
+        }
+        else {
+            $this->_session->start();
+            if(isset($_POST['id'])){
+                $this->User->setId($_POST['id']);
+                $error = $this->User->delete();
+                if($error) $this->_session->put('success','Deleted');
+                else $this->_session->put('error', $error);
+            }
+            else {
+                $this->_session->put('error', 'Missing user_id');
+            }
+            Router::go(array('users','viewall'));
+        }
+    }
+
+    public function control_panel(){
+        if(!$this->_session->isAdmin()){
+            $this->gotologin();
+        }
+        else{
+            $this->set('title','Control Panel');
+            $this->set('controller',$this->_controller);
+
+            $this->_template->render();
+        }
+    }
+
+    public function mkAdmin(){
+        if(!$this->_session->isAdmin()){
+            $this->gotologin();
+        }
+        else{
+            $this->_session->start();
+            if(isset($_POST['user_id'])){
+                $error = $this->User->mkAdmin($_POST['user_id']);
+                if(!$error) $this->_session->put('success','User - to - > Admin');
+                else $this->_session->put('error', $error);
+            }
+            else {
+                $this->_session->put('error', 'Missing user_id');
+            }
+            Router::go(array('users','viewall'));
+        }
+    }
+
+    public function umkAdmin(){
+        if(!$this->_session->isAdmin()){
+            $this->gotologin();
+        }
+        else{
+            $this->_session->start();
+            if(isset($_POST['admin_id'])){
+                $error = $this->User->umkAdmin($_POST['admin_id']);
+                if(!$error) {
+                    $this->_session->put('success','Admin - to - > User');
+                }
+                else $this->_session->put('error', $error);
+
+                Router::go(array('users','viewall'));
+            }
+            else {
+                $this->_session->put('error', 'Missing admin_id');
+                Router::go(array('users','viewall'));
+            }
+        }
+    }
+
     public function isAdmin($email){
         return $this->User->isAdmin($email);
     }
@@ -14,6 +86,13 @@ class UsersController extends Controller{
             $this->set('title','Users Account');
             $this->set('controller',$this->_controller);
             $this->set('users',$this->User->getAllUsers());
+
+            $this->_session->start();
+
+            if($this->_session->getc('user_admin'))  $this->set('currentUser',$this->_session->getc('user_admin'));
+            if($this->_session->get('user.admin'))  $this->set('currentUser',$this->_session->get('user.admin'));
+            if($success = $this->_session->getDelete('success')) $this->set('success',$success);
+            if($error = $this->_session->getDelete('error')) $this->set('error',$error);
 
             $this->_template->render();
         }
@@ -57,7 +136,7 @@ class UsersController extends Controller{
 
                     $this->_session->put('user.email', $email);
                     if($this->isAdmin($email)) $this->_session->put('user.admin', $email);
-                    var_dump($this->isAdmin($email));
+                    //var_dump($this->isAdmin($email));
                 }
 
                 Router::go(array('products', 'viewall'));

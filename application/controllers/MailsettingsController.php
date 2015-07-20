@@ -1,6 +1,27 @@
 <?php
 
 class MailsettingsController extends Controller{
+
+    public function viewall(){
+        if(!$this->_session->isAdmin()){
+            //var_dump("dasdsa");
+            //$this->_template->render();
+            $this->gotologin();
+        }
+        else{
+            $this->set('title','Users Account');
+            $this->set('controller',$this->_controller);
+            $this->set('settings',$this->Mailsetting->getAllSettings());
+
+
+            if($success = $this->_session->getDelete('success')) $this->set('success',$success);
+            if($error = $this->_session->getDelete('error')) $this->set('error',$error);
+
+
+            $this->_template->render();
+        }
+    }
+
     public function setup(){
         if(!$this->_session->isAdmin()){
             $this->gotologin();
@@ -42,8 +63,7 @@ class MailsettingsController extends Controller{
 
                 //var_dump($obj->cript($pass));
                 //var_dump($obj->decript($obj->cript($pass)));
-
-                Router::go(array('users','login'));
+                Router::go(array('mailsettings','viewall'));
 
             }
             else {

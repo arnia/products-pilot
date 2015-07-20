@@ -28,6 +28,11 @@ class Mailsetting extends Model{
         }
     }
 
+    public function getAllSettings(){
+        $query = "select * from mailsettings";
+        return $this->query($query);
+    }
+
     public function get(){
         $query="select smtp_config from mailsettings";
         $result = $this->query($query,1);

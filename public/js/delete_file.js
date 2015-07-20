@@ -16,8 +16,9 @@ function delete_file(file,domain){
         y.type = "file";
         y.name = "file";
         y.accept=".txt,.pdf,.doc,.docx";
-        var x = document.getElementById("update_form");
-        var z = document.getElementById("last_line");
-        x.insertBefore(y, z);
+        var x = document.getElementById("uploadfield");
+        //var z = document.getElementById("last_line");
+        //x.insertBefore(y, z);
+        x.appendChild(y);
     }
 }

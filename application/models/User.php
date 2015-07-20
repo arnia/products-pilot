@@ -26,6 +26,19 @@ class User extends Model{
         }
     }
 
+    public function umkAdmin($admin_id){
+        $admin_id = $this->_mysqli->real_escape_string($admin_id);
+        $query = "delete from admins where id = $admin_id";
+        if($this->query($query)) return null;
+        return 'Database Error';
+    }
+
+    public function mkAdmin($user_id){
+        $query = "insert into admins(user_id) values ('$user_id')";
+        if($this->query($query)) return null;
+        return 'Database Error';
+    }
+
     public function getAllUsers(){
         $query = "SELECT u.id id, u.email email, u.verified verified, a.id admin_id FROM users u
                   left join admins a on(u.id = a.user_id);";
@@ -49,9 +62,12 @@ class User extends Model{
 
         $query="select id from users where email='$email' and password='$password' and verified=1;";
 
-        if (!$this->query($query)) return 'Database Error';
+        $this->query($query);
+
+        //var_dump($this->_result);
 
         if($this->_result->num_rows==1) {
+            var_dump('dsad');
             return null;
         }
         else{
@@ -64,7 +80,7 @@ class User extends Model{
                 return "Incorrect email or password";
             }
         }
-        return "Database Error";
+        return "Incorrect email or password";
     }
 
     public function add(){

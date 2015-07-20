@@ -76,7 +76,7 @@ function Main() {
 
     $router = new Router($url);
     $router->setDefaultController('users');
-    $router->setDefaultAction('index');
+    $router->setDefaultAction('login');
     $router->parse();
 
 

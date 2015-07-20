@@ -1,5 +1,15 @@
-<a href='<?php echo Router::buildPath(array('users','account_settings')) ?>' type='button' class='btn btn-default btn-md'>Account Settings</a>
+<div class="btn-group" role="group">
+    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Account Settings
+        <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+        <li><a href="<?php echo Router::buildPath(array('users','logout'));?>">LogOut</a></li>
+        <li><a href="<?php echo Router::buildPath(array('users','changepass'));?>">Change Password</a></li>
+    </ul>
+</div>
 <?php if($isAdmin) { ?>
+    <a href='<?php echo Router::buildPath(array('users','control_panel'));?>' type='button' class='btn btn-default btn-md'>Control Panel</a>
     <div id='toright'>
         <a href='<?php echo Router::buildPath(array($controller,'add_edit')) ?>' class='btn btn-success'>Add New</a>
     </div>
@@ -42,7 +52,7 @@
             <td><a href="<?php echo $product->file ?>" download> <?php echo $product->file ?> </a></td>
             <?php if($isAdmin) { ?>
             <td>
-                <form  id='del_form_<?php echo $i?>' action='<?php echo $dpath ?>' onsubmit='validateForm(<?php echo $i ?>)' method='post' >
+                <form  id='<?php echo "delForm$i" ?>' action='<?php echo $dpath ?>' onsubmit="validateForm('<?php echo "delForm$i" ?>')" method='post' >
                     <input type = 'hidden' name = 'id' value = <?php echo $product->id ?> >
                     <input type = 'hidden' name = 'file' value = <?php echo $product->file ?> >
                     <input type='submit' class='btn btn-danger'  value='Delete'>

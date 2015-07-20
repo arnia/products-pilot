@@ -10,6 +10,7 @@ class DbsettingsController extends Controller{
         $this->_session->start();
         if($success = $this->_session->getDelete('success')) $this->set('success',$success);
         if($error = $this->_session->getDelete('error')) $this->set('error',$error);
+        $this->_session->forget();
 
         $this->_template->render();
     }
@@ -50,17 +51,24 @@ class DbsettingsController extends Controller{
                      ");
                 fclose($conf);
                 try{
-                    $this->Dbsetting->install($db_name,$email,$pass);
+                    $connect = $this->Dbsetting->install($db_host,$db_user,$db_password,$db_name,$email,$pass);
                 }
                 catch (mysqli_sql_exception $e) {
                     $this->_session->start();
                     $this->_session->put('error','Please try again with valid database fields');
                     Router::go(array('dbsettings','index'));
                 }
+                if($connect) {
+                    $this->_session->start();
+                    $this->_session->put('success','Database was initialized');
+                    Router::go(array('users','login'));
+                }
+                else {
+                    $this->_session->start();
+                    $this->_session->put('error','Please try again with valid database fields');
+                    Router::go(array('dbsettings','index'));
+                }
 
-                $this->_session->start();
-                $this->_session->put('success','Database was initialized');
-                Router::go(array('users','login'));
 
             }
             else {

@@ -1,7 +1,7 @@
 function validateForm(formId){
-    var conf = confirm("Are you sure you want to delete ?");
+    var conf = confirm("Are you sure ?");
     if(!conf){
-        var del_form = document.getElementById('del_form_'+formId);
+        var del_form = document.getElementById(formId);
         del_form.action = '';
     }
 }

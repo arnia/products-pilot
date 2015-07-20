@@ -220,7 +220,7 @@ class SecureSessionHandler extends Singleton {
 
     public function isAdmin(){
         if($this->getc('user_admin')) return true;
-
+        $this->start();
         if($this->isAuth() && $this->get('user.admin')) return true;
 
         //var_dump($this->get('user.admin'));

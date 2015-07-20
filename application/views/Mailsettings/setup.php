@@ -3,14 +3,14 @@
     <strong>Error:</strong> <?php echo $error ?>
 </div>
 <?php } ?>
-<form role="form" action="<?php echo Router::buildPath(array($controller,'add')) ?>" method="post">
+<form class="form-inline" role="form" action="<?php echo Router::buildPath(array($controller,'add')) ?>" method="post">
     <div class="form-group">
         <label for="text">SMTP Host</label>
         <input type="text" class="form-control" id="host" name="host" value="smtp.gmail.com" required>
     </div>
     <div class="form-group">
         <label for="text">Port</label>
-        <input type="number" min="0" max="10000" step="1" placeholder="Type port…" name="port" value="587"required>
+        <input class="form-control" type="number" min="0" max="10000" step="1" placeholder="Type port…" name="port" value="587"required>
     </div>
     <div class="form-group">
         <label for="text">Security Type</label>

@@ -2,11 +2,11 @@
 
 class Dbsetting extends Model{
 
-    public function install($db_name,$email,$pass){
+    public function install($db_host,$db_user,$db_password,$db_name,$email,$pass){
 
 
-        $this->connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
-
+        $connect = $this->connect($db_host,$db_user, $db_password,$db_name);
+        var_dump($connect);
 
         $this->_mysqli->query("create database if not exists $db_name");
         $this->_mysqli->select_db($db_name);
@@ -15,7 +15,8 @@ class Dbsetting extends Model{
         $this->_mysqli->query("
             create table if not exists mailsettings(
                 id int(10) primary key auto_increment,
-                smtp_config mediumtext
+                smtp_config mediumtext,
+                verified boolean default false not null
             );");
 
         $result = $this->_mysqli->query("
@@ -63,5 +64,7 @@ class Dbsetting extends Model{
         );
         ");
         if($result) $this->_mysqli->query("insert into admins(user_id) values (1);");
+
+        return $connect;
     }
 }

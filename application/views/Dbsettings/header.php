@@ -13,7 +13,7 @@
         #main{
             margin:auto;
             margin-top: 50px;
-            width: 70%;
+            width: 15%;
         }
         #toright{
             margin-left:auto;
