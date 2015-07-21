@@ -2,13 +2,7 @@
 
 class ProductsController extends Controller{
 
-    private function gotologin($error = 'previous'){
-        $this->_session->start();
-        $this->_session->put('error',"Login to access $error page !");
-        Router::go(array('users','login'));
-    }
-
-    public function viewall(){
+    public function shop(){
         if(!$this->_session->isAuth()){
             $this->gotologin("Products");
         }
@@ -16,10 +10,28 @@ class ProductsController extends Controller{
             $this->set('title','Products');
             $this->set('products',$this->Product->getAllProducts());
             $this->set('controller',$this->_controller);
+            if($this->_session->getc('user_email')) $this->set('email',$this->_session->getc('user_email'));
+            if($this->_session->get('user.email')) $this->set('email',$this->_session->getc('user.email'));
 
-            $isAdmin = $this->_session->isAdmin();
-            $this->set('isAdmin',$isAdmin);
+            $this->_template->render();
+        }
 
+    }
+
+    private function gotologin($error = 'previous'){
+        $this->_session->start();
+        $this->_session->put('error',"Login to access $error page !");
+        Router::go(array('users','login'));
+    }
+
+    public function viewall(){
+        if(!$this->_session->isAdmin()){
+            $this->gotologin("Products");
+        }
+        else{
+            $this->set('title','Products');
+            $this->set('products',$this->Product->getAllProducts());
+            $this->set('controller',$this->_controller);
             $this->_template->render();
         }
     }

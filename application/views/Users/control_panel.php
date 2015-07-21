@@ -1,4 +1,8 @@
-
+<div id="toright">
+    <div class="btn-group" role="group" aria-label="...">
+        <a href='<?php echo Router::buildPath(array('users','logout'));?>' type='button' class='btn btn-default btn-md'>LogOut</a>
+    </div>
+</div>
 <div class="btn-group" role="group" aria-label="...">
 
     <div class="btn-group" role="group">
@@ -16,5 +20,5 @@
 
     <a href='<?php echo Router::buildPath(array('products','viewall'));?>' type='button' class='btn btn-default btn-md'>Products</a>
 
-    <a href='<?php echo Router::buildPath(array('mailsettings','viewall'));?>' style="margin-top:15px" type='button' class='btn btn-default btn-md'>Mail Settings</a>
+    <a href='<?php echo Router::buildPath(array('mailsettings','viewall'));?>' type='button' class='btn btn-default btn-md'>Mail Settings</a>
 </div>

@@ -1,3 +1,4 @@
+<div id="userform">
 <?php if(isset($error)) { ?>
     <div class='alert alert-danger' style='margin-top:10px'>
         <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
@@ -28,3 +29,4 @@
     <button type="submit" class="btn btn-default">SignUp</button>
     <a href="<?php echo Router::buildPath(array($controller,'login')) ?>" style="width: 50%; display:block; margin-top:20px;" class="btn btn-info">LogIn</a>
 </form>
+</div>

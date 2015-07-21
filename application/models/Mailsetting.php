@@ -28,14 +28,48 @@ class Mailsetting extends Model{
         }
     }
 
+    public function getDefault(){
+        $query = "select id from mailsettings where def=1";
+        if($result = $this->query($query,1)) return $result->id;
+        else return 0;
+    }
+
+    public function setDefault($id){
+        $id = $this->_mysqli->escape_string($id);
+        $query = "update mailsettings set def=0";
+        $ok = $this->query($query);
+        $query = "update mailsettings set def=1
+                  where id = $id";
+        $ok =ok && $this->query($query);
+        //var_dump($query);
+        return $ok;
+    }
+
+    public function update($id,$json){
+        $id = $this->_mysqli->escape_string($id);
+        $query = "update mailsettings set smtp_config='$json'
+                      where id=$id ";
+        //var_dump($query);
+        return $this->query($query);
+    }
+
+    public function delete($id){
+        $id = $this->_mysqli->escape_string($id);
+        $query = "delete from mailsettings where id = $id";
+        return $this->query($query);
+    }
+
     public function getAllSettings(){
         $query = "select * from mailsettings";
         return $this->query($query);
     }
 
     public function get(){
-        $query="select smtp_config from mailsettings";
-        $result = $this->query($query,1);
+        if($id = $this->getDefault()) {
+            $query="select smtp_config from mailsettings where id = $id";
+            $result = $this->query($query,1);
+        }
+        else return null;
 
         if($this->_result->num_rows>=1){
             $cfg = json_decode($result->smtp_config);

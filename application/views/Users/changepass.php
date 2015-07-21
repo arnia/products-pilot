@@ -1,3 +1,4 @@
+<div id="userform">
 <?php if(isset($error)) { ?>
     <div class='alert alert-danger' style='margin-top:10px'>
         <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
@@ -26,3 +27,4 @@
     </div>
     <button type="submit" class="btn btn-default" style="margin-top:15px;">Change Password</button>
 </form>
+</div>

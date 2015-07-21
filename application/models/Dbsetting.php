@@ -16,7 +16,7 @@ class Dbsetting extends Model{
             create table if not exists mailsettings(
                 id int(10) primary key auto_increment,
                 smtp_config mediumtext,
-                verified boolean default false not null
+                def boolean default false not null
             );");
 
         $result = $this->_mysqli->query("

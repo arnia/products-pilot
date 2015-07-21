@@ -12,8 +12,18 @@
     <style>
         #main{
             margin:auto;
+            margin-top: 50px;
+            width: 60%;
+        }
+        #toright{
+            margin-left:auto;
+            margin-right: 0;
+            width: 10%;
+        }
+        #userform{
+            margin:auto;
             margin-top: 200px;
-            width: 20%;
+            width: 25%;
         }
     </style>
 </head>

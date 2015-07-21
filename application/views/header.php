@@ -12,16 +12,20 @@
     <style>
         #main{
             margin:auto;
-            margin-top: 50px;
+            margin-top: 30px;
             width: 70%;
         }
         #toright{
             margin-left:auto;
             margin-right: 0;
-            width: 10%;
+            width:7%;
+        }
+        #cart_logo{
+            width:25px;
         }
 
     </style>
 </head>
 <body>
+
 <div id="main">

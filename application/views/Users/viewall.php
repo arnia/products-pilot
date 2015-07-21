@@ -1,10 +1,17 @@
+<div id="toright">
+    <div class="btn-group" role="group" aria-label="...">
+        <a href='<?php echo Router::buildPath(array('users','logout'));?>' type='button' class='btn btn-default btn-md'>LogOut</a>
+    </div>
+</div>
+<a href='<?php echo Router::buildPath(array('users','control_panel'));?>' type='button' class='btn btn-default btn-md'>Control Panel</a>
+
+
 <?php if(isset($error)) { ?>
     <div class='alert alert-danger' style='margin-top:10px'>
         <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
         <strong></strong> <?php echo $error ?>
     </div>
 <?php } ?>
-
 <?php if(isset($success)) { ?>
     <div class='alert alert-success' style='margin-top:10px'>
         <strong>Info:</strong> <?php echo $success ?>
@@ -67,13 +74,6 @@
             <?php } else { ?>
                 <button type="button" class="btn btn-danger disabled">Delete</button>
             <?php } ?>
-
-
-
-
-
-
-
         </td>
     </tr>
 <?php } ?>
@@ -81,6 +81,6 @@
     </table>
 
 <?php } else  echo "No rows found!" ?>
-<a href="<?php echo Router::buildPath(array($controller,'signup')) ?>" style="display:block; margin-top:20px; width:50%;" class="btn btn-info">Add New User</a>
 
-<a href='<?php echo Router::buildPath(array('users','control_panel'));?>' type='button' class='btn btn-default btn-md'>Control Panel</a>
+<a href="<?php echo Router::buildPath(array($controller,'signup')) ?>" class="btn btn-success">Add New</a>
+

@@ -128,18 +128,25 @@ class UsersController extends Controller{
                 if ($checkbox == 1) {
 
                     $this->_session->putc('user_email',$email);
-                    if($this->isAdmin($email)) $this->_session->putc('user_admin', $email);
+                    if($this->isAdmin($email)) {
+                        $this->_session->forget();
+                        $this->_session->start();
+                        $this->_session->put('user_admin', $email);
+                        Router::go(array('products', 'viewall'));
+                    }
 
                 } else {
-                    $this->_session->forget();
+
                     $this->_session->start();
 
                     $this->_session->put('user.email', $email);
-                    if($this->isAdmin($email)) $this->_session->put('user.admin', $email);
+                    if($this->isAdmin($email)) {
+                        $this->_session->put('user.admin', $email);
+                        Router::go(array('products', 'viewall'));
+                    }
                     //var_dump($this->isAdmin($email));
                 }
-
-                Router::go(array('products', 'viewall'));
+                Router::go(array('products', 'shop'));
             }
         } else {
             $error = "All fields are required";

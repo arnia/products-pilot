@@ -1,6 +1,6 @@
 <?php
 
-define('EXP_TIME',5);
+define('EXP_TIME',15);
 
 class SecureSessionHandler extends Singleton {
 
@@ -209,7 +209,10 @@ class SecureSessionHandler extends Singleton {
     }
 
     public function isAuth(){
-        if($this->getc('user_email')) return true;
+        if($this->getc('user_email')) {
+            //var_dump($this->getc('user_email'))  ;
+            return true;
+        }
         $this->start();
         if($this->isValid() && $this->get('user.email')) return true;
 
