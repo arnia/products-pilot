@@ -11,7 +11,7 @@ class ProductsController extends Controller{
             $this->set('products',$this->Product->getAllProducts());
             $this->set('controller',$this->_controller);
             if($this->_session->getc('user_email')) $this->set('email',$this->_session->getc('user_email'));
-            if($this->_session->get('user.email')) $this->set('email',$this->_session->getc('user.email'));
+            if($this->_session->get('user.email')) $this->set('email',$this->_session->get('user.email'));
 
             $this->_template->render();
         }

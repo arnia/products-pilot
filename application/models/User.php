@@ -26,6 +26,43 @@ class User extends Model{
         }
     }
 
+    public function updatecart($email,$product_id,$nr){
+        $email = $this->_mysqli->real_escape_string($email);
+        $product_id = $this->_mysqli->real_escape_string($product_id);
+        $query = "select id from users where email = '$email'";
+        $user_id = $this->query($query,1)->id;
+
+        $this->query("delete from shoppingcarts where user_id = $user_id && product_id = $product_id");
+
+        for($i = 0;$i < $nr;$i++){
+            $this->query("insert into shoppingcarts values ($user_id, $product_id)");
+        }
+    }
+
+    public function delFromCart($product_id){
+        $product_id = $this->_mysqli->real_escape_string($product_id);
+        $query = "delete from shoppingcarts where product_id = $product_id";
+        if($this->query($query)) return null;
+        return 'Database Error';
+    }
+
+    public function getShoppingCart($email){
+        $email = $this->_mysqli->real_escape_string($email);
+        $query = "select id from users where email = '$email'";
+        $user_id = $this->query($query,1)->id;
+
+        $query = "select p.id, p.name name, t.name type, p.price, shcart.nr from products p
+                  join types t on (t.id = p.type_id)
+                  join (
+                          select p.id, count(1) nr from products p
+                          join shoppingcarts s on (s.product_id = p.id)
+                          join users u on (u.id = s.user_id)
+                          where s.user_id = $user_id
+                          group by p.id
+                        ) shcart on (shcart.id = p.id)";
+        return $this->query($query);
+    }
+
     public function umkAdmin($admin_id){
         $admin_id = $this->_mysqli->real_escape_string($admin_id);
         $query = "delete from admins where id = $admin_id";

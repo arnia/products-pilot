@@ -1,8 +1,7 @@
-function addToCart(email,product_id){
-
+function countCart(email){
     var request = $.ajax({
-        url: "/products_pilot/scripts/add_to_cart.php",
-        data: { email: email, product_id: product_id },
+        url: "/products_pilot/scripts/countCart.php",
+        data: { email: email },
         type: "POST",
         dataType: "text"
     });

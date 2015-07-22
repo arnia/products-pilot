@@ -2,13 +2,69 @@
 
 class UsersController extends Controller{
 
+    public function updatecart(){
+        if(!$this->_session->isAuth()){
+            $this->gotologin();
+        }
+        else{
+            if(isset($_POST['product_id']) && isset($_POST['nr'])) {
+                $this->set('title', 'MyShoppingCart');
+
+                if ($this->_session->getc('user_email')) $email = $this->_session->getc('user_email');
+                if ($this->_session->get('user.email')) $email = $this->_session->get('user.email');
+
+                $error = $this->User->updatecart($email,$_POST['product_id'],$_POST['nr']);
+                if($error) $this->_session->put('error', $error);
+            }
+            else {
+                $this->_session->put('error', 'Missing product_id');
+            }
+
+            Router::go(array('users','mycart'));
+        }
+    }
+
+    public function delfromcart(){
+        if(!$this->_session->isAuth()){
+            $this->gotologin();
+        }
+        else {
+            if(isset($_POST['product_id'])){
+                $error = $this->User->delFromCart($_POST['product_id']);
+                if(!$error) $this->_session->put('success','Product deleted form Shopping Cart');
+                else $this->_session->put('error', $error);
+            }
+            else {
+                $this->_session->put('error', 'Missing product_id');
+            }
+            Router::go(array('users','mycart'));
+        }
+    }
+
+    public function mycart(){
+        if(!$this->_session->isAuth()){
+            $this->gotologin();
+        }
+        else{
+            $this->set('title','MyShoppingCart');
+
+            if($this->_session->getc('user_email')) $email = $this->_session->getc('user_email');
+            if($this->_session->get('user.email')) $email = $this->_session->get('user.email');
+
+            $this->set('shoppingcart',$this->User->getShoppingCart($email));
+
+            if($success = $this->_session->getDelete('success')) $this->set('success',$success);
+            if($error = $this->_session->getDelete('error')) $this->set('error',$error);
+
+            $this->_template->render();
+        }
+    }
 
     public function delete(){
         if(!$this->_session->isAdmin()){
             $this->gotologin();
         }
         else {
-            $this->_session->start();
             if(isset($_POST['id'])){
                 $this->User->setId($_POST['id']);
                 $error = $this->User->delete();

@@ -5,6 +5,8 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 
 <script src="<?php echo DOMAIN; ?>/js/validateForm.js"></script>
+<script src="<?php echo DOMAIN; ?>/js/delFromCart.js"></script>
+<script src="<?php echo DOMAIN; ?>/js/countCart.js"></script>
 
 </body>
 </html>

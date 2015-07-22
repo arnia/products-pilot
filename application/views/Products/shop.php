@@ -11,9 +11,9 @@
     <ul class="dropdown-menu">
         <li><a href="<?php echo Router::buildPath(array('users','changepass'));?>">Change Password</a></li>
     </ul>
-    <button class="btn btn-primary" type="button" >
-        My Cart <span class="badge" id = 'myCart' ></span>
-    </button>
+    <a class="btn btn-primary" type="button" href = "<?php echo Router::buildPath(array('users','mycart')) ?>">
+        <span class="badge" style="color:red" id = 'countCart' ></span> My Shopping Cart <span class="badge" id = 'myCart' ></span>
+    </a>
 </div>
 
 <?php

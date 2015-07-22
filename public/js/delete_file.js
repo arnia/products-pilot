@@ -3,7 +3,7 @@ function delete_file(file,domain){
     if(r == true)
     {
         $.ajax({
-            url: domain + '/script/del.php',
+            url: domain + '/scripts/del.php',
             data: {'file' : file},
             type: 'POST'
         });
