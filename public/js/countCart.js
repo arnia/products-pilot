@@ -7,7 +7,7 @@ function countCart(email){
     });
 
     request.done(function(data){
-        var x = document.getElementById("myCart").innerHTML="New " + data + " added";
+        var x = document.getElementById("countCart").innerHTML=data;
     });
 
     request.fail(function( jqXHR, textStatus ) {

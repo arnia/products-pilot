@@ -30,6 +30,8 @@
     <th>Type</th>
     <th>Price</th>
     <th>File</th>
+    <th>Image</th>
+    <th>Description</th>
     <th>Delete</th>
     </tr>
     </thead>
@@ -45,7 +47,9 @@
             <td> <?php echo $product->name ?> </td>
             <td> <?php echo $product->type ?></td>
             <td> <?php echo $product->price ?></td>
-            <td><a href="<?php echo DOMAIN . '/uploads/' . $product->file ?>" download> <?php echo $product->file ?> </a></td>
+            <td> <a href="<?php echo DOMAIN . '/uploads/' . $product->file ?>" download> <?php echo $product->file ?> </a></td>
+            <td> <a href="<?php echo DOMAIN . '/img/' .$product->image ?>"><img width="150px" src = "<?php echo DOMAIN . '/img/' .$product->image ?>" ></a> </td>
+            <td> <?php echo $product->description ?></td>
             <td>
                 <form  id='<?php echo "delForm$i" ?>' action='<?php echo $dpath ?>' onsubmit="validateForm('<?php echo "delForm$i" ?>')" method='post' >
                     <input type = 'hidden' name = 'id' value = <?php echo $product->id ?> >

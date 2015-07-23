@@ -15,7 +15,7 @@ class Dbsetting extends Model{
         $this->_mysqli->query("
             create table if not exists mailsettings(
                 id int(10) primary key auto_increment,
-                smtp_config mediumtext,
+                smtp_config text,
                 def boolean default false not null
             );");
 
@@ -35,6 +35,8 @@ class Dbsetting extends Model{
                 type_id int(1),
                 price float(10,4) not null,
                 file varchar(256),
+                image varchar(256),
+                description text,
                 foreign key (type_id) REFERENCES Types(id)
             );
         ");

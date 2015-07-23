@@ -1,22 +1,37 @@
-function delete_file(file,domain){
+function delete_file(file,domain,id){
     var r = confirm("Are you sure you want to delete this file?");
     if(r == true)
     {
-        $.ajax({
+        request = $.ajax({
             url: domain + '/scripts/del.php',
-            data: {'file' : file},
+            data: {'file' : file , 'id' : id},
             type: 'POST'
         });
 
-        var x = document.getElementById("file_link");
+        request.done(function(data){
+            console.log(data);
+        });
+
+        request.fail(function( jqXHR, textStatus ) {
+            alert( "Request failed: " + textStatus );
+        });
+
+        var x = document.getElementById("file_link"+id);
         x.parentNode.removeChild(x);
-        x = document.getElementById("file_button");
+        x = document.getElementById("file_button"+id);
         x.parentNode.removeChild(x);
         var y = document.createElement("input");
         y.type = "file";
-        y.name = "file";
-        y.accept=".txt,.pdf,.doc,.docx";
-        var x = document.getElementById("uploadfield");
+
+        if(id == 1) {
+            y.name = "file";
+            y.accept=".txt,.pdf,.doc,.docx";
+        }
+        else {
+            y.name = "image";
+            y.accept=".jpg,.jpeg,.png";
+        }
+        var x = document.getElementById("uploadfield"+id);
         //var z = document.getElementById("last_line");
         //x.insertBefore(y, z);
         x.appendChild(y);

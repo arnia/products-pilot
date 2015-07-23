@@ -9,6 +9,9 @@
         <span class="caret"></span>
     </button>
     <ul class="dropdown-menu">
+        <?php if(isset($admin)) { ?>
+        <li><a href="<?php echo Router::buildPath(array('users','control_panel'));?>">Control Panel</a></li>
+        <?php } ?>
         <li><a href="<?php echo Router::buildPath(array('users','changepass'));?>">Change Password</a></li>
     </ul>
     <a class="btn btn-primary" type="button" href = "<?php echo Router::buildPath(array('users','mycart')) ?>">
@@ -16,36 +19,31 @@
     </a>
 </div>
 
-<?php
-if ($products) {
-    $dpath = Router::buildPath(array($controller,'delete'));
-    ?>
-    <table class='table table-bordered'>
-        <caption>Products</caption>
-        <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Price</th>
-            <th>File</th>
-            <th>Add to cart</th>
-        </tr>
-        </thead>
-        <tbody>
-        <?php
-        foreach($products as $i => $product) {
-            $apath = Router::buildPath(array($controller,'add_edit',$product->id));
-            ?>
-            <tr>
-                <td> <?php echo $product->name ?> </td>
-                <td> <?php echo $product->type ?></td>
-                <td> <?php echo $product->price ?></td>
-                <td> <a href="<?php echo DOMAIN . '/uploads/' . $product->file ?>" download> <?php echo $product->file ?> </a></td>
-                <td> <img id="cart_logo" src="<?php echo DOMAIN ?>/img/add_to_cart.jpg" onclick="addToCart('<?php echo $email ?>','<?php echo $product->id ?>')"></td>
-            </tr>
-        <?php } ?>
+<div class = "products" >
+<?php if ($products) {  ?>
+    <?php  foreach($products as $i => $product) { ?>
 
-        </tbody>
-    </table>
-
+        <div class="col-sm-5 col-md-3">
+            <div class="thumbnail">
+                <a href="<?php echo DOMAIN . '/img/' .$product->image ?>"><img src = "<?php echo DOMAIN . '/img/' .$product->image ?>"></a>
+                <div class="caption">
+                    <h3><?php echo $product->name ?></h3>
+                    <p><?php echo substr($product->description,0,20) ?></p>
+                    <p>Category: <?php echo $product->type ?></p>
+                    <p>Attached file:
+                        <?php if($product->file) { ?>
+                        <a href="<?php  echo DOMAIN . '/uploads/' . $product->file;?>" download> <?php echo $product->file;?> </a>
+                        <?php } else { ?>
+                        -Not Found-
+                        <?php } ?>
+                    </p>
+                    <h4>Price: <?php echo number_format((float)$product->price,2,',','.') ?></h4>
+                </div>
+                <div style = "margin:auto;width: 40%">
+                <a href="#"><img src="<?php echo DOMAIN ?>/img/add_to_cart.jpg" onclick="addToCart('<?php echo $email ?>','<?php echo $product->id ?>')"></a>
+                </div>
+            </div>
+        </div>
+    <?php } ?>
 <?php } else  echo "No rows found!" ?>
+</div>

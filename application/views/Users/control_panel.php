@@ -21,4 +21,7 @@
     <a href='<?php echo Router::buildPath(array('products','viewall'));?>' type='button' class='btn btn-default btn-md'>Products</a>
 
     <a href='<?php echo Router::buildPath(array('mailsettings','viewall'));?>' type='button' class='btn btn-default btn-md'>Mail Settings</a>
+
+    <a href='<?php echo Router::buildPath(array('products','shop'));?>' type='button' class='btn btn-default btn-md'>Shop</a>
+
 </div>

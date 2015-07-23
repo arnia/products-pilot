@@ -26,13 +26,30 @@
     </div>
     <div class="form-group">
         <label class="control-label col-sm-1" for="">File:</label>
-        <div class="col-sm-3" id="uploadfield">
+        <div class="col-sm-3" id="uploadfield1">
             <?php if(isset($product->file)&&!empty($product->file)) { ?>
-                <a href = "<?php echo $product->file ?>" id="file_link" download > <?php echo $product->file ?> </a>
-                <button type="button" class="btn btn-danger btn-sm" onclick="delete_file('<?php echo $product->file ?>','<?php echo DOMAIN ?>')" id="file_button" >Delete</button>
+                <a href = "<?php echo $product->file ?>" id="file_link1" download > <?php echo $product->file ?> </a>
+                <button type="button" class="btn btn-danger btn-sm" onclick="delete_file('<?php echo $product->file?>','<?php echo DOMAIN ?>',1)" id="file_button1" >Delete</button>
             <?php } else { ?>
                 <input type='file' name='file' accept='.txt,.pdf,.doc,.docx' >
             <?php } ?>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-sm-1" for="">Image:</label>
+        <div class="col-sm-3" id="uploadfield2">
+                <?php if(isset($product->image)&&!empty($product->image)) { ?>
+                    <img width="150px" src = "<?php echo DOMAIN . '/img/' .$product->image ?>" id="file_link2" >
+                    <button type="button" class="btn btn-danger btn-sm" onclick="delete_file('<?php echo $product->image?>','<?php echo DOMAIN ?>',2)" id="file_button2" >Delete</button>
+                <?php } else { ?>
+                    <input type='file' name='image' accept='.jpg,.jpeg,.png' >
+                <?php } ?>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-sm-1" for="">Description:</label>
+        <div class="col-sm-3">
+        <textarea name = 'description' rows="3" type="text" class="form-control" placeholder="Product description..."><?php if(isset($product->price)) echo $product->description?></textarea>
         </div>
     </div>
 <input type='hidden' name='id' value='<?php if(isset($product->id)) echo $product->id?>'>

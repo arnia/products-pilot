@@ -24,8 +24,13 @@
             width:25px;
         }
 
+        .products{
+            margin-top:30px;
+            float:left;
+        }
+
     </style>
 </head>
-<body onload="countCart('<?php echo $email ?>')">
+<body onload="countCart('<?php if(isset($email)) echo $email ?>')">
 
 <div id="main">

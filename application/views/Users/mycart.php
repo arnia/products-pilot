@@ -27,7 +27,7 @@ if ($shoppingcart) {
         <tr>
             <th>Name</th>
             <th>Type</th>
-            <th>Cantity</th>
+            <th>Quantity</th>
             <th>Delete</th>
             <th>Price</th>
         </tr>

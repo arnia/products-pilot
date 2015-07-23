@@ -12,6 +12,7 @@ class ProductsController extends Controller{
             $this->set('controller',$this->_controller);
             if($this->_session->getc('user_email')) $this->set('email',$this->_session->getc('user_email'));
             if($this->_session->get('user.email')) $this->set('email',$this->_session->get('user.email'));
+            if($this->_session->isAdmin()) $this->set('admin',true);
 
             $this->_template->render();
         }
@@ -40,7 +41,7 @@ class ProductsController extends Controller{
             $this->gotologin();
         }
         else {
-            $this->set('title','Add a new product or Delete a product');
+            $this->set('title','Add a new product or Edit a product');
             $this->set('product',$this->Product->select($id));
             $this->set('controller',$this->_controller);
             if ($id) $this->set('new',false);
@@ -66,17 +67,21 @@ class ProductsController extends Controller{
             $this->gotologin();
         }
         else {
-            if (isset($_POST['type']) && isset($_POST['name']) && isset($_POST['price'])) {
+            if (isset($_POST['type']) && isset($_POST['name']) && isset($_POST['price']) && isset($_POST['description'])) {
                 $this->Product->setId($_POST['id']);
                 $this->Product->setName($_POST['name']);
                 $this->Product->setPrice($_POST['price']);
                 $this->Product->setType($_POST['type']);
+                $this->Product->setDescription($_POST['description']);
                 if (isset($_FILES["file"]["name"])) $this->Product->setFile(basename($_FILES["file"]["name"]));
                 else $this->Product->setFile('default');
+                if (isset($_FILES["image"]["name"])) $this->Product->setImage(basename($_FILES["image"]["name"]));
+                else $this->Product->setImage('default');
 
                 if ($this->Product->getId()) {
-                    if ($this->Product->update()) $this->set('succes', true);
-                    else $this->set('succes', false);
+                    //var_dump($this->Product->getImage());
+                    //var_dump($this->Product->getFile());
+                    $this->Product->update();
                 } else {
                     if ($this->Product->add_new()) $this->set('succes', true);
                     else $this->set('succes', false);

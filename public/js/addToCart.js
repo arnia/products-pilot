@@ -8,7 +8,10 @@ function addToCart(email,product_id){
     });
 
     request.done(function(data){
-        var x = document.getElementById("myCart").innerHTML="New " + data + " added";
+        data = JSON.parse(data);
+        console.log(data);
+        document.getElementById("myCart").innerHTML="New " + data.product_name + " added";
+        document.getElementById("countCart").innerHTML=data.nr_products;
     });
 
     request.fail(function( jqXHR, textStatus ) {

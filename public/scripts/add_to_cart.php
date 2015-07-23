@@ -30,4 +30,13 @@ $product = $result->fetch_object();
 $product_name = $product->name;
 
 
-echo $product_name;
+$query = "select count(1) nr from shoppingcarts where user_id = $user_id";
+
+$result = $mysqli->query($query);
+
+$nr_products = 0;
+if($result) {
+    $nr_products = $result->fetch_object()->nr;
+}
+
+echo json_encode(array('product_name'=>$product_name,'nr_products'=>$nr_products));
