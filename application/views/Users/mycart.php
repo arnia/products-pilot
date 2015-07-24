@@ -67,7 +67,7 @@ if ($shoppingcart) {
     </table>
     <div class="panel-footer"><p class="text-right" style="margin-right:130px;font-weight: bold;" >Total price: <?php echo $total ?></p></div>
     </div>
-
+    <a href="<?php echo Router::buildPath(array('users','pay_paypal'))?>"><img src="https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif" align="right" style="margin-left:7px;"></a>
 <?php } else  echo "Your shopping cart is empty !" ?>
 <hr>
 <a href='<?php echo Router::buildPath(array('products','shop'));?>' type='button' class='btn btn-default btn-md'>Back to Shop</a>

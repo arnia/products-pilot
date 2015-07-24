@@ -1,6 +1,63 @@
 <?php
 
+use PayPal\Auth\OAuthTokenCredential;
+use PayPal\Api\Amount;
+use PayPal\Api\Details;
+use PayPal\Api\Item;
+use PayPal\Api\ItemList;
+use PayPal\Api\Payer;
+use PayPal\Api\Payment;
+use PayPal\Api\RedirectUrls;
+use PayPal\Api\Transaction;
+use PayPal\Rest\ApiContext;
+
 class UsersController extends Controller{
+
+    public function pay_paypal(){
+        require ROOT . DS . 'library' . DS . 'paypal_bootstrap.php';
+
+        $cred = new OAuthTokenCredential("ASoFp5N8bjs0m3Czfyqocy9o_6ZuZOEQMaM1PB8H1h4uTFPYgPFePfIjBvruMIwUrZ9jtV1RLS7PGqIM",
+                                         "ECk662STXzf0U4aXr_JgHWxDjXVsPMCQQN2BTDTCRqvotxnub2kD-3dHqhj9z1-TxHgf0KQpY9c0vCXv"); //client_secret
+
+        $item1 = new Item();
+
+        $item1->setName('Granola bars');
+        $item1->setCurrency('USD');
+        $item1->setQuantity(5);
+        $item1->setSku("321321"); // Similar to `item_number` in Classic API
+        $item1->setPrice(2);
+
+        var_dump($cred);
+
+        $cred = "Bearer A015e3AO6x1x8grfwx2Q.z0iLyz6RJR4xCxVM9Sj3.fu9Fo";
+        $apiContext = new ApiContext($cred, 'Request' . time());
+
+        $payer = new Payer();
+        $payer->setPayment_method("paypal");
+
+        $amount = new Amount();
+        $amount->setCurrency("USD");
+        $amount->setTotal("12");
+
+        $transaction = new Transaction();
+        $transaction->setDescription("creating a payment");
+        $transaction->setAmount($amount);
+
+        $baseUrl = getBaseUrl();
+        $redirectUrls = new RedirectUrls();
+        $redirectUrls->setReturn_url(Router::buildPath(array('users','executepay_paypal?succes=true')));
+        $redirectUrls->setCancel_url(Router::buildPath(array('users','executepay_paypal?cancel=true')));
+
+        $payment = new Payment();
+        $payment->setIntent("sale");
+        $payment->setPayer($payer);
+        $payment->setRedirect_urls($redirectUrls);
+        $payment->setTransactions(array($transaction));
+
+        $payment->create($apiContext);
+
+
+    }
 
     public function updatecart(){
         if(!$this->_session->isAuth()){
