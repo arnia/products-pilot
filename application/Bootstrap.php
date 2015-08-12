@@ -16,6 +16,8 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 		));
 		return $autoloader;
 	}*/
+
+
 	protected function setConstants($constants)
 	{
 		foreach($constants as $name => $value)
@@ -45,13 +47,15 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 	{
 		$frontController = Zend_Controller_Front::getInstance();
 		$frontController->registerPlugin(new My_Plugin_SessionTrack());
-		//$frontController->registerPlugin(new My_Plugin_Auth());
+		$frontController->registerPlugin(new My_Plugin_Auth());
 	}
+
 
 	protected function _initSessions() {
 		$sessionconf = APPLICATION_PATH . '/' . 'configs' . '/' . 'sessionconf.ini';
 		$config = new Zend_Config_Ini($sessionconf, 'development');
 		Zend_Session::setOptions($config->toArray());
 	}
+
 }
 
