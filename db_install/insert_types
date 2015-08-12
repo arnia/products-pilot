@@ -1,1 +1,0 @@
-insert into types(name) values ('Hardware'),('Software'),('Book'),('Movie');
