@@ -1,0 +1,59 @@
+<div id='toright'>
+    <a href="<?php echo $this->url(array('controller' => 'products','action' => 'save'), 'default', true) ?>" class='btn btn-success'>Add New</a>
+</div>
+<?php
+    if ($this->products) {
+        $dpath =  $this->url(array('controller' => 'products','action' => 'delete'), 'default', true);
+?>
+    <table class='table table-bordered'>
+    <caption>Products</caption>
+    <thead>
+    <tr>
+    <th>ID</th>
+    <th>Name</th>
+    <th>Type</th>
+    <th>Price</th>
+    <th>File</th>
+    <th>Image</th>
+    <th>Description</th>
+    <th>Delete</th>
+    </tr>
+    </thead>
+    <tbody>
+<?php
+    foreach($this->products as $i => $product) {
+        $editPath = $this->url(array('controller' => 'products','action' => 'save', 'id' => $product->id), null, true);
+?>
+        <tr>
+            <td>
+            <a href='<?php echo $editPath?>'> <?php echo $product->id ?></a>
+            </td>
+            <td> <?php echo $product->name ?> </td>
+            <td> <?php echo $product->getCategoryName() ?> </td>
+            <td> <?php echo number_format($product->price, 2) ?></td>
+            <td> <a href="<?php echo '/uploads/data/' . $product->file; ?>" download> <?php echo $product->file ?> </a></td>
+            <td> <a href="<?php echo $editPath?>"><img width="150px" src = "<?php echo '/uploads/images/' . $product->image; ?>" ></a>  </td>
+            <td> <?php echo substr($product->description,0,20) ?></td>
+            <td>
+                <!--<form  id='<?php /*echo "delForm$i" */?>' action='<?php /*echo $dpath */?>' onsubmit="validateForm('<?php /*echo "delForm$i" */?>')" method='post' >
+                    <input type = 'hidden' name = 'id' value = <?php /*echo $product->id */?> >
+                    <input type = 'hidden' name = 'file' value = <?php /*echo $product->file */?> >
+                    <input type='submit' class='btn btn-danger'  value='Delete'>
+                </form>-->
+                <?php
+
+                    $this->form->setAction( $this->url(array('controller' => 'products','action' => 'delete'), null, true));
+                    $this->form->addAttribs(array(
+                       'id' => 'delForm' . $product->id,
+                        'onsubmit' => "validateForm('delForm" . $product->id . "')",
+                    ));
+                    $this->form->getElement('product_id')->setValue($product->id);
+                    echo $this->form;
+                ?>
+            </td>
+        </tr>
+<?php } ?>
+
+    </tbody></table>
+
+<?php } else  echo "No rows found!" ?>

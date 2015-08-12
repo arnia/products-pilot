@@ -1,0 +1,37 @@
+#toright{
+    margin-left:auto;
+    margin-right: 0;
+    width:7%;
+}
+
+.center{
+    margin:auto;
+    width: 80%;
+}
+
+img.thumbnail{
+    display: block;
+    max-width:320px;
+    max-height:150px;
+    width: auto;
+    height: auto;
+    border:0;
+}
+
+img.item{
+    display: block;
+    max-width:800px;
+    max-height:300px;
+    width: auto;
+    height: auto;
+    border:0;
+}
+
+.bybutton{
+    margin: auto;
+    display: block;
+    max-width: 100px;
+    width: auto;
+    height: auto;
+    border:0;
+}
