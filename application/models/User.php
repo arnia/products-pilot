@@ -11,6 +11,9 @@ class Application_Model_User {
 
     public function __construct($params = NULL)
     {
+        if(isset($params['id']) && !empty($params['id'])){
+            $this->id = $params['id'];
+        }
         if(isset($params['email']) && !empty($params['email'])){
             $this->email = $params['email'];
         }

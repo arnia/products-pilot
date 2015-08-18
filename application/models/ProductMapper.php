@@ -85,19 +85,22 @@ class Application_Model_ProductMapper
         return $entries;
     }
 
-    public function getProduct($id){
+    public function getProductById($id){
         //$row = $this->getDbTable()->find($id);
         //$row = $row[0];
         $row = $this->getDbTable()->fetchRow($this->getDbTable()->select()->where('id = ?', $id));
-        $product = new Application_Model_Product();
+        if (0 == count($row)) {
+            return;
+        }
+        $product = new Application_Model_Product($row);
 
-        $product->setId($row->id);
+       /* $product->setId($row->id);
         $product->setName($row->name);
         $product->setCategoryId($row->category_id);
         $product->setFile($row->file);
         $product->setPrice($row->price);
         $product->setImage($row->image);
-        $product->setDescription($row->description);
+        $product->setDescription($row->description);*/
 
         return $product;
     }
@@ -107,26 +110,36 @@ class Application_Model_ProductMapper
         $file = $row->file;
         $image = $row->image;
         if($file) {
-            $rows = $this->getDbTable()->fetchAll($this->getDbTable()->select('id')->where('file = ?', $file));
-            if (count($rows) == 1) {
-                $file = UPLOADS_DATA . '/' .$file;
-                //$file = '/var/www/products-pilot/public/uploads/data/test.txt';
-                //var_dump(file_exists($file), $file);
-                if(file_exists($file)){
-                    unlink($file);
-                }
+            $file = UPLOADS_DATA . '/' .$file;
+            if(file_exists($file)){
+                unlink($file);
             }
         }
         if($image) {
-            $rows = $this->getDbTable()->fetchAll($this->getDbTable()->select('id')->where('image = ?', $image));
-            if (count($rows) == 1) {
-                $image = UPLOADS_IMAGES . '/' . $image;
-                if(file_exists($image)){
-                    unlink($image);
-                }
+            $image = UPLOADS_IMAGES . '/' . $image;
+            if(file_exists($image)){
+                unlink($image);
             }
         }
         $this->getDbTable()->delete("id = $id");
+    }
+
+    public function delete_file($file){
+        if($file) {
+            $file = UPLOADS_DATA . '/' .$file;
+            if(file_exists($file)){
+                unlink($file);
+            }
+        }
+    }
+
+    public function delete_image($image){
+        if($image) {
+            $image = UPLOADS_IMAGES . '/' . $image;
+            if(file_exists($image)){
+                unlink($image);
+            }
+        }
     }
 
 }

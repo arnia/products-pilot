@@ -32,14 +32,9 @@
             <td> <?php echo $product->getCategoryName() ?> </td>
             <td> <?php echo number_format($product->price, 2) ?></td>
             <td> <a href="<?php echo RUPLOADS_DATA . '/' . $product->file; ?>" download> <?php echo $product->file ?> </a></td>
-            <td> <a href="<?php echo $editPath?>"><img width="150px" src = "<?php echo RUPLOADS_IMAGES . '/' . $product->image; ?>" ></a>  </td>
+            <td> <a href="<?php echo $editPath?>"><img width="150px" src = "<?php if ($product->image) echo RUPLOADS_IMAGES . '/' . $product->image; else echo IMAGE_NOT_FOUND ?>" ></a>  </td>
             <td> <?php echo substr($product->description,0,20) ?></td>
             <td>
-                <!--<form  id='<?php /*echo "delForm$i" */?>' action='<?php /*echo $dpath */?>' onsubmit="validateForm('<?php /*echo "delForm$i" */?>')" method='post' >
-                    <input type = 'hidden' name = 'id' value = <?php /*echo $product->id */?> >
-                    <input type = 'hidden' name = 'file' value = <?php /*echo $product->file */?> >
-                    <input type='submit' class='btn btn-danger'  value='Delete'>
-                </form>-->
                 <?php
 
                     $this->form->setAction( $this->url(array('controller' => 'products','action' => 'delete'), null, true));

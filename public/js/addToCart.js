@@ -1,8 +1,8 @@
-function addToCart(email,product_id){
+function addToCart(user_id,product_id){
 
     var request = $.ajax({
         url: "/scripts/add_to_cart.php",
-        data: { email: email, product_id: product_id },
+        data: { user_id: user_id, product_id: product_id },
         type: "POST",
         dataType: "text"
     });

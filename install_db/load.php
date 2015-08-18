@@ -6,7 +6,7 @@
 // Initialize the application path and autoloading
 
 define ('DEFAULT_ADMIN', 'admin');
-define ('DEFAULT_PASSWORD', 'admin_!');
+define ('DEFAULT_PASSWORD', 'admin');
 
 defined('APPLICATION_PATH')
 || define('APPLICATION_PATH', realpath(dirname(__FILE__) . '/../application'));

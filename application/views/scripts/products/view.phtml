@@ -1,18 +1,8 @@
 <div class="row">
     <div class="center" >
-        <div class="col-md-2">
-            <p class="lead">Products-Pilot</p>
-            <div class="list-group">
-                <?php foreach($this->categories as $i => $category) { ?>
-                    <a href="#" class="list-group-item"> <?php echo $category->name ?> </a>
-                <?php } ?>
-            </div>
-        </div>
-
         <div class="col-md-8">
-
             <div class="thumbnail">
-                <img class=" item img-responsive" src="<?php echo '/uploads/images/' . $this->product->image ?>" alt="">
+                <img class=" item img-responsive" src="<?php if ($this->product->image) echo RUPLOADS_IMAGES . '/' . $this->product->image; else echo IMAGE_NOT_FOUND ?>" alt="">
                 <div class="caption-full">
                     <h4 class="pull-right">$ <?php echo number_format((float)$this->product->price,2,',','.') ?></h4>
                     <h4><a href="#"><?php echo $this->product->name ?></a></h4>
@@ -37,7 +27,7 @@
                     </p>
                 </div>
                 <div class="bybutton">
-                    <a href="#"><img src="/img/add_to_cart.jpg" onclick="addToCart('<?php echo 'email' ?>','<?php echo $this->product->id ?>')"></a>
+                    <a href="#"><img src="<?php echo BUY_BUTTON ?>" onclick="addToCart('<?php echo 'email' ?>','<?php echo $this->product->id ?>')"></a>
                 </div>
             </div>
         </div>

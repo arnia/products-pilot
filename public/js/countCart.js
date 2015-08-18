@@ -8,7 +8,7 @@ function countCart(email){
         });
 
         request.done(function(data){
-            var x = document.getElementById("countCart").innerHTML=data;
+            var x = document.getElementById("countCart").innerHTML = data;
         });
 
         request.fail(function( jqXHR, textStatus ) {

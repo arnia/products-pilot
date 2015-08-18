@@ -82,7 +82,14 @@ class Application_Model_UserMapper
         return $entries;
     }
 
-
+    public function getUserByEmail($email){
+        $result = $this->getDbTable()->fetchRow($this->getDbTable()->select()->where('email = ?', $email));
+        if (0 == count($result)) {
+            return;
+        }
+        $user = new Application_Model_User($result);
+        return $user;
+    }
 
 
 
