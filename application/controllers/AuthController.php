@@ -127,7 +127,7 @@ class AuthController  extends Zend_Controller_Action  {
                 else {
                     foreach ($result->getMessages() as $message) {
                         $this->_helper->getHelper('FlashMessenger')->addMessage($message,'error');
-                        //$this->_helper->redirector('login');
+                        $this->_helper->redirector('login');
                     }
                 }
             }
@@ -186,6 +186,44 @@ class AuthController  extends Zend_Controller_Action  {
             return 'admin';
         }
         return 'user';
+    }
+
+    public function chpassAction() {
+        $form = new Application_Form_ChPass();
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            if ($form->isValid($request->getPost())) {
+
+                $data = $form->getValues();
+                $data['oldpassword'] = md5($data['oldpassword']); // MD5
+                $data['newpassword'] = md5($data['newpassword1']);
+                unset($data['newpassword1']);
+                unset($data['newpassword2']);
+
+                $userMapper = new Application_Model_UserMapper();
+
+                try{
+                    $fields = array(
+                        'password' => $data['newpassword'],
+                    );
+                    $userMapper->getDbTable()->update($fields, array('password = ?' => $data['oldpassword']));
+                    $this->_helper->getHelper('FlashMessenger')->addMessage("Password Changed", 'success');
+                    $this->_helper->redirector('chpass');
+                }
+                catch(Exception $e){
+                    $this->_helper->getHelper('FlashMessenger')->addMessage($e->getMessage(), 'error');
+                    $this->_helper->redirector('chpass');
+                }
+
+            }
+            else{
+                foreach ($form->getMessages() as $error){
+                    $this->_helper->getHelper('FlashMessenger')->addMessage(array_shift(array_values($error)), 'error');
+                    $this->_helper->redirector('chpass');
+                }
+            }
+        }
+        $this->view->form = $form;
     }
 
 

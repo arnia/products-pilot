@@ -4,7 +4,7 @@
             <p class="lead">Products-Pilot</p>
             <div class="list-group">
                 <?php foreach($this->categories as $i => $category) { ?>
-                    <a href="#" class="list-group-item"> <?php echo $category->name ?> </a>
+                    <a href="<?php echo $this->url(array('controller' => 'products','action' => 'shop', 'category' => $category->id), null, true) ?>" class="list-group-item"> <?php echo $category->name ?> </a>
                 <?php } ?>
             </div>
         </div>
@@ -48,14 +48,14 @@
 
                     <div class="col-sm-4 col-lg-4 col-md-4">
                         <div class="thumbnail">
-                            <img class = "thumbnail" src="<?php echo '/uploads/images/' . $product->image ?>" alt="">
+                            <img class = "thumbnail" src="<?php echo RUPLOADS_IMAGES . '/' . $product->image; ?>" alt="">
                             <div class="caption">
                                 <h4 class="pull-right">$ <?php echo number_format((float)$product->price,2,',','.') ?> </h4>
                                 <h4><a href="<?php echo  $this->url(array('controller' => 'products','action' => 'view', 'id' => $product->id), null, true);?> "><?php echo $product->name ?></a> </h4>
                                 <p><?php echo substr($product->description,0,80) ?></p>
                                 <p>Attached file:
                                     <?php if($product->file) { ?>
-                                        <a href="<?php  echo '/uploads/data/' . $product->file;?>" download> <?php echo $product->file;?> </a>
+                                        <a href="<?php  echo RUPLOADS_DATA . '/' . $product->file;?>" download> <?php echo $product->file;?> </a>
                                     <?php } else { ?>
                                         -Not Found-
                                     <?php } ?>

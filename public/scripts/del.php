@@ -1,15 +1,15 @@
 <?php
 
 define('ROOT', dirname(dirname(__FILE__)));
-define('UPLOAD', ROOT.'/uploads/');
-define('IMG', ROOT.'/img/');
+define('UPLOADS_DATA', ROOT.'/uploads/data');
+define('UPLOADS_IMAGES', ROOT.'/uploads/images');
 
 if(isset($_POST['id']) && isset($_POST['file'])){
     if($_POST['id'] == 1){
-        $file = UPLOAD . $_POST['file'];
+        $file = UPLOADS_DATA . '/' . $_POST['file'];
     }
     else{
-        $file = IMG . $_POST['file'];
+        $file = UPLOADS_IMAGES . '/' .$_POST['file'];
     }
     echo $file;
     if(file_exists($file)){

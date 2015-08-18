@@ -4,9 +4,8 @@ class ProductsController extends Zend_Controller_Action {
     const MIN = 0;
     const MAX = 5000;
     const VALIDATE_FORM = 'validateForm';
-    const JS_DIR = '/js';
-/*    const UPLOADS_FILE = APPLICATION_PATH . ' /../public/uploads/data/';
-    const UPLOADS_IMAGE = APPLICATION_PATH . '; /../public/uploads/image/';*/
+    const DELETE_FIELD = 'delete_field';
+
 
     public function init()
     {
@@ -19,20 +18,25 @@ class ProductsController extends Zend_Controller_Action {
     }
 
     public function shopAction(){
+        $category_id = $this->getParam('category');
         $productMapper = new Application_Model_ProductMapper();
         $categoriesMapper = new Application_Model_CategoryMapper();
-
-        $this->view->headScript()->appendFile(self::JS_DIR . '/' . self::VALIDATE_FORM . '.js');
-
+        $this->view->headScript()->appendFile(JS_DIR . '/' . self::VALIDATE_FORM . '.js');
         $this->view->categories = $categoriesMapper->fetchAll();
-        $this->view->products = $productMapper->fetchAll();
+
+        if($category_id){
+            $this->view->products = $productMapper->getDbTable()->fetchAll($productMapper->getDbTable()->select()->where('category_id = ?', $category_id));
+        }
+        else {
+            $this->view->products = $productMapper->fetchAll();
+        }
     }
 
     public function viewallAction()
     {
         $productMapper = new Application_Model_ProductMapper();
 
-        $this->view->headScript()->appendFile(self::JS_DIR . '/' . self::VALIDATE_FORM . '.js');
+        $this->view->headScript()->appendFile(JS_DIR . '/' . self::VALIDATE_FORM . '.js');
 
         $this->view->form = $this->getDeleteProductForm();
         $this->view->products = $productMapper->fetchAll();
@@ -48,7 +52,9 @@ class ProductsController extends Zend_Controller_Action {
             $this->view->categories = $categoriesMapper->fetchAll();
             $this->view->product = $productMapper->getProduct($id);;
         }
-        return $this->_helper->redirector('shop');
+        else {
+            return $this->_helper->redirector('shop');
+        }
     }
 
     public function deleteAction(){
@@ -105,6 +111,8 @@ class ProductsController extends Zend_Controller_Action {
         if ($this->getRequest()->isPost()) {
             if ($form->isValid($request->getPost())) {
 
+                $data = $form->getValues();
+
                 $upload = new Zend_File_Transfer();
 
                 $files = $upload->getFileInfo();
@@ -122,6 +130,7 @@ class ProductsController extends Zend_Controller_Action {
                     {
                         $upload->addFilter('Rename', array('target' => UPLOADS_IMAGES . '/' . $file['name'], 'overwrite' => TRUE), $field)
                                ->addValidator('Extension', false, array('jpg', 'jpeg', 'png'), $field);
+                        $data['image'] = $file['name'];
                     }
 
                     // upload instructions for file
@@ -129,6 +138,7 @@ class ProductsController extends Zend_Controller_Action {
                     {
                         $upload->addFilter('Rename', array('target' => UPLOADS_DATA . '/' . $file['name'], 'overwrite' => TRUE), $field)
                                ->addValidator('Extension', false, array('doc', 'docx', 'txt', 'pdf'), $field);
+                        $data['file'] = $file['name'];
                     }
 
 
@@ -156,7 +166,8 @@ class ProductsController extends Zend_Controller_Action {
                 }
 
                 if($isValid){
-                    $product = new Application_Model_Product($form->getValues());
+                    //var_dump($form->getValues());
+                    $product = new Application_Model_Product($data);
                     $mapper = new Application_Model_ProductMapper();
                     $mapper->save($product);
                     return $this->_helper->redirector('viewall');
@@ -164,6 +175,8 @@ class ProductsController extends Zend_Controller_Action {
 //                return $this->redirect()->toRoute('upload-form/success');
             }
         }
+
+        $this->view->headScript()->appendFile(JS_DIR . '/' . self::DELETE_FIELD . '.js');
 
         $this->view->form = $form;
     }
@@ -248,32 +261,58 @@ class ProductsController extends Zend_Controller_Action {
         $input->addValidators(array(new Zend_Validate_Float(), $min, $max, new Zend_Validate_NotEmpty()));
         $input->addDecorator($decoratorField);
         $elements[] = $input;
-        //Add File field
-        $input = new Zend_Form_Element_File('file',array(
-            'label'      => 'File:',
-            'id'         => 'file',
-            'class'      => 'form-control',
-        ));
 
-        $input->addDecorator($decoratorField);
-        $elements[] = $input;
+        if($id) {
+            //Add File field
+            $input = new Zend_Form_Element('file', array(
+                'label' => 'File:',
+                'id' => 'file',
+                'class' => 'form-control',
+                'value' => $product->file,
+            ));
+            $input->addDecorator(new My_Decorator_AnchoraForm());
+            $elements[] = $input;
 
-        //Add Image field
-        $input = new Zend_Form_Element_File('image',array(
-            'label'      => 'Image:',
-            'id'         => 'image',
-            'class'      => 'form-control',
-        ));
+            //Add Image field
+            $input = new Zend_Form_Element('image', array(
+                'label' => 'Image:',
+                'id' => 'image',
+                'class' => 'form-control',
+                'value' => $product->image,
+            ));
 
-        $input->addDecorator($decoratorField);
-        $elements[] = $input;
+            $input->addDecorator(new My_Decorator_ImageForm());
+            $elements[] = $input;
+
+        } else {
+            //Add File field
+            $input = new Zend_Form_Element_File('file', array(
+                'label' => 'File:',
+                'id' => 'file',
+                'class' => 'form-control',
+            ));
+
+            $input->addDecorator($decoratorField);
+            $elements[] = $input;
+
+            //Add Image field
+            $input = new Zend_Form_Element_File('image', array(
+                'label' => 'Image:',
+                'id' => 'image',
+                'class' => 'form-control',
+            ));
+
+            $input->addDecorator($decoratorField);
+            $elements[] = $input;
+
+        }
 
         //Add Description field
-        $input = new Zend_Form_Element_Textarea('description',array(
-            'label'      => 'Description:',
-            'id'         => 'description',
-            'class'      => 'form-control',
-            'value'      => $product->description,
+        $input = new Zend_Form_Element_Textarea('description', array(
+            'label' => 'Description:',
+            'id' => 'description',
+            'class' => 'form-control',
+            'value' => $product->description,
         ));
 
 

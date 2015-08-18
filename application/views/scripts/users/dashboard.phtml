@@ -1,0 +1,218 @@
+<div class="row">
+    <div class="col-lg-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Users
+            </div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Email</th>
+                            <th>Verified</th>
+                            <th>Admin</th>
+                            <th>Delete</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach($this->users as $i => $user) { ?>
+                            <tr>
+                                <td> <?php echo $user->id ?> </td>
+                                <td> <?php echo $user->email ?> </td>
+                                <td>
+                                    <?php if($user->verified) { ?>
+                                        <span class="glyphicon glyphicon-ok" aria-hidden="true" ></span>
+                                    <?php } else { ?>
+                                        <span class="glyphicon glyphicon-minus"></span>
+                                    <?php } ?>
+                                </td>
+                                <td>
+                                    <?php if($user->getAdminId() && $user->verified) { if ($user->getAdminId() == 1) { ?>
+                                        <button type="button" class="btn btn-primary disabled">Super User</button>
+                                    <?php } else { if($user->email != $this->currentUser) { ?>
+                                        <form  id='<?php echo "adForm$i" ?>' action='umkAdmin' onsubmit="validateForm('<?php echo "adForm$i" ?>')" method='post' >
+                                            <input type = 'hidden' name = 'admin_id' value = <?php echo $user->getAdminId() ?> >
+                                            <input type='submit' class='btn btn-danger'  value='Unmake Admin'>
+                                        </form>
+                                    <?php } else { ?>
+                                        <button type="button" class="btn btn-primary disabled">Unmake Admin</button>
+                                    <?php } ?>
+                                    <?php } } elseif ($user->verified) { ?>
+                                        <form  id='<?php echo "adForm$i" ?>' action='mkAdmin' onsubmit="validateForm('<?php echo "adForm$i" ?>')" method='post' >
+                                            <input type = 'hidden' name = 'user_id' value = <?php echo $user->id ?> >
+                                            <input type='submit' class='btn btn-primary'  value='Make Admin'>
+                                        </form>
+                                    <?php } else { ?>
+                                        <button type="button" class="btn btn-primary disabled">Make Admin</button>
+                                    <?php } ?>
+                                </td>
+                                <td>
+                                    <?php if ($user->getAdminId() == 1) { ?>
+                                        <button type="button" class="btn btn-danger disabled">Delete</button>
+                                    <?php } elseif($user->email != $this->currentUser) { ?>
+                                        <form  id='<?php echo "delForm$i" ?>' action='delete' onsubmit="validateForm('<?php echo "delForm$i" ?>')" method='post' >
+                                            <input type = 'hidden' name = 'id' value = <?php echo $user->id ?> >
+                                            <input type='submit' class='btn btn-danger'  value='Delete'>
+                                        </form>
+                                    <?php } else { ?>
+                                        <button type="button" class="btn btn-danger disabled">Delete</button>
+                                    <?php } ?>
+                                </td>
+                            </tr>
+                        <?php } ?>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.table-responsive -->
+            </div>
+            <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
+        </div>
+    <!-- /.col-lg-6 -->
+    <div class="col-lg-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Basic Table
+            </div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Username</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Mark</td>
+                            <td>Otto</td>
+                            <td>@mdo</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Jacob</td>
+                            <td>Thornton</td>
+                            <td>@fat</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Larry</td>
+                            <td>the Bird</td>
+                            <td>@twitter</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.table-responsive -->
+            </div>
+            <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
+    </div>
+    <!-- /.col-lg-6 -->
+</div>
+<!-- /.row -->
+<div class="row">
+    <div class="col-lg-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Striped Rows
+            </div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Username</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Mark</td>
+                            <td>Otto</td>
+                            <td>@mdo</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Jacob</td>
+                            <td>Thornton</td>
+                            <td>@fat</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Larry</td>
+                            <td>the Bird</td>
+                            <td>@twitter</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.table-responsive -->
+            </div>
+            <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
+    </div>
+    <!-- /.col-lg-6 -->
+    <div class="col-lg-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Bordered Table
+            </div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <div class="table-responsive table-bordered">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Username</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Mark</td>
+                            <td>Otto</td>
+                            <td>@mdo</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Jacob</td>
+                            <td>Thornton</td>
+                            <td>@fat</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Larry</td>
+                            <td>the Bird</td>
+                            <td>@twitter</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.table-responsive -->
+            </div>
+            <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
+    </div>
+    <!-- /.col-lg-6 -->
+</div>
+<!-- /.row -->

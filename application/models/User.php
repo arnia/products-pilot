@@ -6,6 +6,8 @@ class Application_Model_User {
     private $password;
     private $hash;
     private $verified;
+    private $adminId;
+
 
     public function __construct($params = NULL)
     {
@@ -39,6 +41,22 @@ class Application_Model_User {
             throw new Exception('Invalid product property');
         }
         return $this->$method();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAdminId()
+    {
+        return $this->adminId;
+    }
+
+    /**
+     * @param mixed $adminId
+     */
+    public function setAdminId($adminId)
+    {
+        $this->adminId = $adminId;
     }
 
     /**

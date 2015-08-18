@@ -59,6 +59,29 @@ class Application_Model_UserMapper
         return $this->getDbTable()->delete(array('email = ?' => $user->email));
     }
 
+    public function fetchAll()
+    {
+        //$resultSet = $this->getDbTable()->fetchAll();
+        //$row = $this->getDbTable()->fetchRow($this->getDbTable()->select()->where('id = ?', 4));
+        $resultSet = $this->getDbTable()->fetchAll($this->getDbTable()->select()
+                                                                      ->from(array('u' => 'users'),
+                                                                          array('id', 'email', 'verified'))
+                                                                      ->joinLeft(array('a' => 'admins'),
+                                                                          'u.id = a.user_id',
+                                                                          array('admin_id' => 'a.id'))
+                                                                      ->setIntegrityCheck(false));
+        $entries   = array();
+        foreach ($resultSet as $row) {
+            $entry = new Application_Model_User();
+            $entry->setId($row->id);
+            $entry->setEmail($row->email);
+            $entry->setVerified($row->verified);
+            $entry->setAdminId($row->admin_id);
+            $entries[] = $entry;
+        }
+        return $entries;
+    }
+
 
 
 
@@ -116,63 +139,8 @@ class Application_Model_UserMapper
         return 'Database Error';
     }
 
-    public function getAllUsers(){
-        $query = "SELECT u.id id, u.email email, u.verified verified, a.id admin_id FROM users u
-                  left join admins a on(u.id = a.user_id);";
-        return $this->query($query);
-    }
 
-    public function isAdmin($email){
-        $email = $this->_mysqli->escape_string($email);
-        $query = "select email from users u
-                  join admins a on (a.user_id = u.id)
-                  where email = '$email'
-                  ";
-        $result = $this->query($query);
-        if($result) return true;
-        return false;
-    }
 
-    public function auth($email,$password){
-        $email = $this->_mysqli->escape_string($email);
-        $password = md5($this->_mysqli->escape_string($password));
-
-        $query="select id from users where email='$email' and password='$password' and verified=1;";
-
-        $this->query($query);
-
-        //var_dump($this->_result);
-
-        if($this->_result->num_rows==1) {
-            var_dump('dsad');
-            return null;
-        }
-        else{
-            $query="select verified from users where email='$email' and verified=0;";
-            $result=$this->_mysqli->query($query);
-            if($result->num_rows==1) {
-                return "Email is not verified";
-            }
-            else{
-                return "Incorrect email or password";
-            }
-        }
-        return "Incorrect email or password";
-    }
-
-    public function add(){
-        if(isset($this->email) && isset($this->password) && isset($this->hash)){
-
-            $this->email = $this->_mysqli->real_escape_string($this->email);
-            $this->password = md5($this->_mysqli->real_escape_string($this->password));
-
-            $query="insert into users(email,password,hash) values ('$this->email','$this->password','$this->hash');";
-            $result = $this->query($query);
-            $this->id = $this->_mysqli->insert_id;
-            return $result;
-        }
-        return null;
-    }
 
     public function rpass(){
         $this->email = $this->_mysqli->escape_string($this->email);
@@ -192,30 +160,6 @@ class Application_Model_UserMapper
             if($this->query($query)) return $pass;
             return null;
         }
-    }
-
-    public function oldpass(){
-        $this->email=$this->_mysqli->escape_string($this->email);
-        $query = "update users
-                set password = '$this->password'
-                where email = '$this->email'";
-        return $this->_mysqli->query($query);
-    }
-
-    public function cpass($oldpassword){
-
-        $this->email = $this->_mysqli->escape_string($this->email);
-        $this->password = md5($this->_mysqli->escape_string($this->password));
-        $oldpassword = md5($this->_mysqli->escape_string($oldpassword));
-
-        $query="select id from users where email = '$this->email' and password = '$oldpassword'";
-
-        $result = $this->query($query,1);
-        if (!$result) return false;
-
-        $query = "update users set password='$this->password' where email = '$this->email' and password = '$oldpassword'";
-
-        return $this->query($query);
     }
 
 }

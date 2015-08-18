@@ -31,8 +31,8 @@
             <td> <?php echo $product->name ?> </td>
             <td> <?php echo $product->getCategoryName() ?> </td>
             <td> <?php echo number_format($product->price, 2) ?></td>
-            <td> <a href="<?php echo '/uploads/data/' . $product->file; ?>" download> <?php echo $product->file ?> </a></td>
-            <td> <a href="<?php echo $editPath?>"><img width="150px" src = "<?php echo '/uploads/images/' . $product->image; ?>" ></a>  </td>
+            <td> <a href="<?php echo RUPLOADS_DATA . '/' . $product->file; ?>" download> <?php echo $product->file ?> </a></td>
+            <td> <a href="<?php echo $editPath?>"><img width="150px" src = "<?php echo RUPLOADS_IMAGES . '/' . $product->image; ?>" ></a>  </td>
             <td> <?php echo substr($product->description,0,20) ?></td>
             <td>
                 <!--<form  id='<?php /*echo "delForm$i" */?>' action='<?php /*echo $dpath */?>' onsubmit="validateForm('<?php /*echo "delForm$i" */?>')" method='post' >
