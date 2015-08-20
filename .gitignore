@@ -1,5 +1,8 @@
 data/session/
 .idea/
+public/uploads
+logs
+
 
 # Composer
 vendor
