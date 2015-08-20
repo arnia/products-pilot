@@ -24,9 +24,16 @@ img.item{
     max-height:300px;
     width: auto;
     height: auto;
+    margin:auto;
     border:0;
 }
-
+img.carouselitem {
+    max-width:800px;
+    max-height:300px;
+    width: auto;
+    height: auto;
+    margin:auto;
+}
 .bybutton{
     margin: auto;
     display: block;

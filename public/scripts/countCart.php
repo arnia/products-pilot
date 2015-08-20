@@ -26,22 +26,10 @@ $bootstrap->bootstrap('db');
 $dbAdapter = $bootstrap->getResource('db');
 
 
-if (isset($_POST['email'])) $email = $_POST['email'];
+if (isset($_POST['user_id'])) $user_id = $_POST['user_id'];
 else return;
+$quantity = $entry = $dbAdapter->fetchRow($dbAdapter->select()->from('shoppingcarts', array('total' => 'SUM(quantity)'))->where('user_id = ?', $user_id));
 
-echo $email;
+$nr_products = ($quantity['total']) ? $quantity['total'] : 0;
 
-/*$query = "select id from users where email = '$email'";
-$result = $mysqli->query($query);
-$user = $result->fetch_object();
-$user_id = $user->id;
-
-$query = "select count(1) nr from shoppingcarts where user_id = $user_id";
-
-$result = $mysqli->query($query);
-if($result) {
-    $nr_products = $result->fetch_object()->nr;
-    echo $nr_products;
-}
-else */echo 0;
-
+echo $nr_products;

@@ -51,6 +51,13 @@ class My_Decorator_Field extends Zend_Form_Decorator_Abstract
             </div>
          </div>";
 
+    protected $_formatNoLabel =
+        "<div class='form-group'>
+            <div class='col-sm-9' id ='%s'>
+            %s
+            </div>
+         </div>";
+
     public function buildInput()
     {
         $element = $this->getElement();
@@ -89,8 +96,8 @@ class My_Decorator_Field extends Zend_Form_Decorator_Abstract
 
         /*if ($element->getDecorator('My_Decorator_InputCostumType')) $input = $element->getDecorator('My_Decorator_InputCostumType')->render('test');
         else $input = $this->buildInput();*/
-
-        $markup  = sprintf($this->_format, $name, $id, $label, $id, $input);
+        if($label) $markup  = sprintf($this->_format, $name, $id, $label, $id, $input);
+        else $markup  = sprintf($this->_formatNoLabel, $id, $input);
 
         return $markup;
     }

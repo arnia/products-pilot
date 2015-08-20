@@ -23,12 +23,14 @@ class My_Class_Acl extends Zend_Acl
         $this->addResource(new Zend_Acl_Resource('shop'));
         $this->addResource(new Zend_Acl_Resource('error'));
         $this->addResource(new Zend_Acl_Resource('verify'));
+        $this->addResource(new Zend_Acl_Resource('dashboard'));
 
         $this->allow('guest', 'index');
         $this->allow('guest', 'error');
-        $this->allow('guest', 'auth', array('login', 'signup', 'verify'));
+        $this->allow('guest', 'auth', array('login', 'signup', 'verify', 'resetpass'));
 
-        $this->allow('user', 'auth');
+        $this->allow('user', 'users');
+        $this->deny('user', 'users', array('dashboard', 'delete'));
         $this->allow('user', 'products', array('index', 'shop', 'view', 'mycart'));
 
         $this->allow('admin');

@@ -36,6 +36,16 @@ create table if not exists mailsettings (
             smtp_config mediumtext
             );
 
+create table if not exists shoppingcarts (
+          id int(10) primary key auto_increment,
+          user_id int(10),
+          product_id int(10),
+          foreign key (user_id) references users(id) on delete cascade on update cascade,
+          foreign key (product_id) references products(id) on delete cascade on update cascade,
+          quantity int(10) DEFAULT 0,
+          constraint unique_entry unique (user_id, product_id)
+          );
+
 insert into users values (1, 'admin@products-pilot.loc', '21232f297a57a5a743894a0e4a801fc3', 'superuser', 1);
 insert into admins(user_id) values (1);
 

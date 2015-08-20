@@ -1,6 +1,6 @@
 <?php
 
-class Application_Form_Login extends Zend_Form {
+class Application_Form_ResetPass extends Zend_Form {
 
     public function init(){
         // Set the method for the display form to POST
@@ -32,45 +32,13 @@ class Application_Form_Login extends Zend_Form {
         $input->addDecorator($decoratorField);
         $elements[] = $input;
 
-        // Add password field
-        $input = new Zend_Form_Element_Password('password',array(
-            'required'   => true,
-            'label'      => 'Password:',
-            'id'         => 'password',
-            'class'      => 'form-control',
-            'placeholder'=> 'Your password..',
-        ));
-
-        $input->addValidators(array(new Zend_Validate_NotEmpty()));
-        $input->addDecorator($decoratorField);
-        $elements[] = $input;
-
-        // Add checkbox field
-        $input = new Zend_Form_Element_Checkbox('rememberMe',array(
-            'label'      => 'Remember me',
-            'id'         => 'rememberMe',
-            'class'      => 'checkbox',
-            'type'       => 'checkbox',
-        ));
-        $decoratorCheckBox = new My_Decorator_CheckBox();
-        $input->addDecorator($decoratorCheckBox);
-        $elements[] = $input;
-
-        $input = new Zend_Form_Element('resetpass', array(
-            'label' => 'Reset your password',
-            'id' => 'resetpass',
-            'class' => 'form-control',
-            'value' => 'resetpass',
-        ));
-        $input->addDecorator(new My_Decorator_AnchoraForm());
-        $elements[] = $input;
 
         //Add Submit button
         $input = new Zend_Form_Element_Submit('submit',array(
-                'Label'      => '',
-                'class'      => 'btn btn-default',
-                'value'      => 'Login',
-            ));
+            'Label'      => '',
+            'class'      => 'btn btn-default',
+            'value'      => 'Reset',
+        ));
         $input->addDecorator($decoratorField);
         $elements[] = $input;
 
@@ -78,7 +46,7 @@ class Application_Form_Login extends Zend_Form {
         $this->addElements($elements);
 
         $this->addDisplayGroup(
-            array('email', 'password', 'resetpass', 'rememberMe', 'submit'),
+            array('email', 'submit'),
             'displgrp',
             array(
                 'decorators' => array(

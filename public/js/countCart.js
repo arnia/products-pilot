@@ -1,8 +1,8 @@
-function countCart(email){
-    if(email != null && email != ''){
+function countCart(user_id){
+    if(user_id != null && user_id != ''){
         var request = $.ajax({
         url: "/scripts/countCart.php",
-        data: { email: email },
+        data: { user_id: user_id },
         type: "POST",
         dataType: "text"
         });

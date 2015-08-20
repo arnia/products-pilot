@@ -24,36 +24,52 @@ $bootstrap = $application->getBootstrap();
 $bootstrap->bootstrap('db');
 $dbAdapter = $bootstrap->getResource('db');
 
-$query = "create table if not exists shoppingcarts (
-          user_id int(10),
-          product_id int(10),
-          foreign key (user_id) references users(id) on delete cascade on update cascade,
-          foreign key (product_id) references products(id) on delete cascade on update cascade
-          )";
+/*
+$query = "";
 
-$dbAdapter->getConnection()->query($query);
+$dbAdapter->getConnection()->query($query);*/
 
 if (isset($_POST['user_id'])) $user_id = $_POST['user_id'];
+else return;
 if (isset($_POST['product_id'])) $product_id = $_POST['product_id'];
+else return;
 
-$data = array(
-    'user_id'       => $user_id,
-    'product_id'    => $product_id,
-);
-$dbAdapter->insert('shoppingcarts', $data);
 
+$entry = $dbAdapter->fetchRow($dbAdapter->select('quantity')->from('shoppingcarts')->where('user_id = ?', $user_id)->where('product_id = ?', $product_id));
+
+if($entry['quantity']) {
+    $data = array(
+        'quantity' => ++$entry['quantity'],
+    );
+
+    $dbAdapter->update('shoppingcarts', $data, array('user_id = ?' => $user_id, 'product_id = ?' => $product_id));
+} else {
+    /*SELECT MIN(t1.ID + 1) AS nextID
+    FROM tablename t1
+    LEFT JOIN tablename t2
+       ON t1.ID + 1 = t2.ID
+    WHERE t2.ID IS NULL*/
+
+    /*$result = $dbAdapter->fetchRow($dbAdapter->select()
+                                             ->from(array('s1' => 'shoppingcarts'), array(new Zend_Db_Expr('MIN(s1.id + 1 ) as nextId')))
+                                             ->joinLeft(array('s2' => 'shoppingcarts'), 's1.id + 1 = s2.id', array())
+                                             ->where('s2.id IS NULL'));*/
+
+    $data = array(
+        'user_id' => $user_id,
+        'product_id' => $product_id,
+        'quantity' => 1,
+    );
+
+    $dbAdapter->insert('shoppingcarts', $data);
+}
+
+$quantity = $entry = $dbAdapter->fetchRow($dbAdapter->select()->from('shoppingcarts', array('total' => 'SUM(quantity)'))->where('user_id = ?', $user_id));
+
+$nr_products = ($quantity['total']) ? $quantity['total'] : 0;
 
 $row = $dbAdapter->fetchRow($dbAdapter->select('name')->from('products')->where('id = ?', $product_id));
-$product_name = $row->name;
+$product_name = $row['name'];
 
 
-/*$query = "select count(1) nr from shoppingcarts where user_id = $user_id";
-
-$result = $mysqli->query($query);
-
-$nr_products = 0;
-if($result) {
-    $nr_products = $result->fetch_object()->nr;
-}*/
-
-echo json_encode(array('product_name' => 'sdf', 'nr_products' => '1'));
+echo json_encode(array('product_name' => $product_name, 'nr_products' => $nr_products));

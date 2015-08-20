@@ -37,7 +37,7 @@
 
 
 </head>
-<body onload="countCart('<?php $auth = Zend_Auth::getInstance(); if($auth->hasIdentity()) echo $auth->getIdentity()->email ?>')">
+<body onload="countCart('<?php $auth = Zend_Auth::getInstance(); if($auth->hasIdentity()) echo $auth->getIdentity()->id ?>')">
 <div class="container">
 
     <nav class="navbar navbar navbar-default navbar-fixed-top">
@@ -105,7 +105,7 @@
                     <?php } ?>
                 </div>
             </div>
-
+            <div class="col-md-8">
                 <?php $flashMessenger = Zend_Controller_Action_HelperBroker::getStaticHelper('FlashMessenger'); ?>
 
                 <?php if ($flashMessenger->hasMessages('info')): ?>
@@ -138,7 +138,7 @@
 
 
                 <?php echo $this->layout()->content ?>
-
+            </div>
         </div>
     </div>
 </div>

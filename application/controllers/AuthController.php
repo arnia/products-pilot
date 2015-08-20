@@ -63,6 +63,7 @@ class AuthController  extends Zend_Controller_Action  {
                     }
                 }
                 catch (Exception $e){
+                    $userMapper->delete($user);
                     //var_dump($e->getMessage());
                     $this->_helper->getHelper('FlashMessenger')->addMessage($e->getMessage(), 'error');
                     $this->_helper->redirector('signup');
@@ -226,5 +227,77 @@ class AuthController  extends Zend_Controller_Action  {
         $this->view->form = $form;
     }
 
+    public function resetpassAction() {
+        $form = new Application_Form_ResetPass();
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            if ($form->isValid($request->getPost())) {
 
+                $data = $form->getValues();
+
+                try {
+                    //check if email is registered
+                    $userMapper = new Application_Model_UserMapper();
+                    $result = $userMapper->getDbTable()->fetchRow($userMapper->getDbTable()->select('id')->where('email = ?', $data['email']));
+                    if( !$result || count($result) == 0 ) throw new ErrorException('Email is not registered!');
+
+                    //generate new password and update database field
+                    $length = 8;
+                    $pass = substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, $length);
+                    $new_pass = md5($pass);
+
+                    $update_fields = array(
+                        'password'  => $new_pass,
+                    );
+                    $result = $userMapper->getDbTable()->update($update_fields, array('email = ?' => $data['email']));
+                    if( !$result ) throw new ErrorException('Something goes wrong!');
+
+
+                    //send email with new credentials
+                    $mailMapper = new Application_Model_MailsettingMapper();
+                    $mailsetting = $mailMapper->getConfig();
+
+                    $obj = new My_Class_Cript();
+
+                    $config = array('auth' => 'login',
+                        'username' => $mailsetting->email,
+                        'password' => $obj->decript($mailsetting->password),
+                        'ssl' => $mailsetting->stype,
+                        'port' => $mailsetting->port,
+                    );
+
+                    $transport = new Zend_Mail_Transport_Smtp($mailsetting->host, $config);
+
+                    $mail = new Zend_Mail();
+
+                    $message = "<p>New password is: $pass</p>";
+
+                    $mail->setBodyHtml($message);
+                    $mail->setFrom('noreply@products-pilot.loc', 'Products-Pilot');
+                    $mail->addTo($data['email'], 'You');
+                    $mail->setSubject('New Password');
+
+                    if ($mail->send($transport)) {
+                        $this->_helper->getHelper('FlashMessenger')->addMessage('Check your email for new password', 'info');
+                        return $this->_helper->redirector('login');
+                    }
+                }
+                catch (Exception $e){
+                    //var_dump($e->getMessage());
+                    $this->_helper->getHelper('FlashMessenger')->addMessage($e->getMessage(), 'error');
+                    $this->_helper->redirector('resetpass');
+                }
+
+                //$this->_helper->redirector('login');
+            }
+            else{
+                foreach ($form->getMessages() as $error){
+                    $this->_helper->getHelper('FlashMessenger')->addMessage(array_shift(array_values($error)), 'error');
+                    $this->_helper->redirector('resetpass');
+                    //var_dump(array_shift(array_values($error)));
+                }
+            }
+        }
+        $this->view->form = $form;
+    }
 }

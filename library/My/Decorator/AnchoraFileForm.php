@@ -1,6 +1,6 @@
 <?php
 
-class My_Decorator_AnchoraForm extends Zend_Form_Decorator_Abstract
+class My_Decorator_AnchoraFileForm extends Zend_Form_Decorator_Abstract
 {
 
     protected $_format;
@@ -10,9 +10,13 @@ class My_Decorator_AnchoraForm extends Zend_Form_Decorator_Abstract
         parent:: __construct($options);
         $this->_format = "
         <div class='form-group'>
-            <label class = 'control-label col-sm-1' for = '%s'>%s</label>
+            <label class = 'control-label col-sm-1' for = '%s'> %s </label>
             <div class='col-sm-2' id ='%s'>
-                <a href='%s' > %s </a>
+                <a href='%s'  download> %s </a>
+                <a href=\"javascript: delete_field('%s')\">
+                   <span class='glyphicon glyphicon-remove' style='color:red;margin-left:10px;'></span>
+                </a>
+                <input type='hidden' name ='%s' value='%s'>
             </div>
          </div>";
     }
@@ -30,7 +34,7 @@ class My_Decorator_AnchoraForm extends Zend_Form_Decorator_Abstract
         $id      = htmlentities($element->getId());
         $value   = htmlentities($element->getValue());
 
-        $markup  = sprintf($this->_format, $name, '', $id, $value, $label);
+        $markup  = sprintf($this->_format, $name, $label, $id, RUPLOADS_DATA . '/' . $value, $value, $id, $name, $value);
 
         return $markup;
     }

@@ -36,22 +36,25 @@ class ProductsController extends Zend_Controller_Action {
         else {
             $this->view->products = $productMapper->fetchAll();
         }
+        $this->view->newproducts = $productMapper->getDbTable()->fetchAll($productMapper->getDbTable()->select()->order('id DESC')->limit('3'));
+
+
         $this->_helper->layout->setLayout('shop');
     }
 
-    public function viewallAction()
-    {
+    public function viewallAction() {
         $productMapper = new Application_Model_ProductMapper();
 
         $this->view->headScript()->appendFile(JS_DIR . '/' . self::VALIDATE_FORM . '.js');
 
-        $this->view->form = $this->getDeleteProductForm();
+        $this->view->form = new Application_Form_DeleteProduct();
+
         $this->view->products = $productMapper->fetchAll();
 
     }
 
     public function viewAction(){
-
+        $this->view->headScript()->appendFile(JS_DIR . '/' . self::COUNT_CART . '.js');
         $id = $this->getParam('id');
         if($id){
             $productMapper = new Application_Model_ProductMapper();
@@ -67,7 +70,7 @@ class ProductsController extends Zend_Controller_Action {
 
     public function deleteAction(){
         $request = $this->getRequest();
-        $form = $this->getDeleteProductForm();
+        $form = new Application_Form_DeleteProduct();
 
         if ($this->getRequest()->isPost()) {
             if ($form->isValid($request->getPost())) {
@@ -78,36 +81,6 @@ class ProductsController extends Zend_Controller_Action {
             }
         }
 
-    }
-
-    public function getDeleteProductForm()
-    {
-        $form = new Zend_Form();
-        $form->setMethod('post');
-        $decoratorField = new My_Decorator_Field();
-        $elements = array();
-        //Add id hidden field
-
-        $input = new Zend_Form_Element_Hidden('product_id');
-
-        $min = new Zend_Validate_GreaterThan(self::MIN);
-
-        $input->addValidators(array(new Zend_Validate_Digits(), $min, new Zend_Validate_NotEmpty()));
-        $elements[] = $input;
-
-
-        //Add Submit button
-        $input = new Zend_Form_Element_Submit('submit',array(
-            'Label'      => '',
-            'class'      => 'btn btn-danger',
-            'value'      => 'Delete',
-        ));
-        $elements[] = $input;
-        $input->addDecorator($decoratorField);
-        $form->addElements($elements);
-
-
-        return $form;
     }
 
     public function saveAction(){
@@ -299,7 +272,7 @@ class ProductsController extends Zend_Controller_Action {
                     'class' => 'form-control',
                     'value' => $product->file,
                 ));
-                $input->addDecorator(new My_Decorator_AnchoraForm());
+                $input->addDecorator(new My_Decorator_AnchoraFileForm());
                 $elements[] = $input;
             }
             else {
@@ -371,14 +344,14 @@ class ProductsController extends Zend_Controller_Action {
         //Add Submit button
         if(!$id) {
             $input = new Zend_Form_Element_Submit('submit',array(
-                'Label'      => '',
+                'Label'      => ' ',
                 'class'      => 'btn btn-success',
                 'value'      => 'Add New Product',
             ));
         }
         else {
             $input = new Zend_Form_Element_Submit('submit',array(
-                'Label'      => '',
+                'Label'      => ' ',
                 'class'      => 'btn btn-info',
                 'value'      => 'Update Product',
             ));

@@ -91,16 +91,27 @@ class Application_Model_UserMapper
         return $user;
     }
 
+    public function getShoppingCart($user_id){
+
+        $result = $this->getDbTable()->fetchAll($this->getDbTable()->select()
+                                                         ->from(array('p' => 'products'),
+                                                             array('id', 'name', 'price'))
+                                                         ->join(array('c' => 'categories'),
+                                                             'c.id = p.category_id',
+                                                             array('category' => 'c.name'))
+                                                         ->join(array('s' => 'shoppingcarts'),
+                                                             's.product_id = p.id',
+                                                             array('quantity' => 's.quantity'))
+                                                         ->where('s.user_id = ?', $user_id)
+                                                         ->setIntegrityCheck(false));
+        return $result;
+    }
 
 
 
 
 
-    public function updatecart($email,$product_id,$nr){
-        $email = $this->_mysqli->real_escape_string($email);
-        $product_id = $this->_mysqli->real_escape_string($product_id);
-        $query = "select id from users where email = '$email'";
-        $user_id = $this->query($query,1)->id;
+    public function updatecart($user_id, $product_id,$quantity){
 
         $this->query("delete from shoppingcarts where user_id = $user_id && product_id = $product_id");
 
@@ -116,22 +127,7 @@ class Application_Model_UserMapper
         return 'Database Error';
     }
 
-    public function getShoppingCart($email){
-        $email = $this->_mysqli->real_escape_string($email);
-        $query = "select id from users where email = '$email'";
-        $user_id = $this->query($query,1)->id;
 
-        $query = "select p.id, p.name name, t.name type, p.price, shcart.nr from products p
-                  join types t on (t.id = p.type_id)
-                  join (
-                          select p.id, count(1) nr from products p
-                          join shoppingcarts s on (s.product_id = p.id)
-                          join users u on (u.id = s.user_id)
-                          where s.user_id = $user_id
-                          group by p.id
-                        ) shcart on (shcart.id = p.id)";
-        return $this->query($query);
-    }
 
     public function umkAdmin($admin_id){
         $admin_id = $this->_mysqli->real_escape_string($admin_id);
@@ -145,28 +141,4 @@ class Application_Model_UserMapper
         if($this->query($query)) return null;
         return 'Database Error';
     }
-
-
-
-
-    public function rpass(){
-        $this->email = $this->_mysqli->escape_string($this->email);
-        $query="select password from users where email='$this->email'";
-
-        $result = $this->query($query,1);
-        if ($result) $this->password = $result->password;
-
-        if($this->_result->num_rows == 1) {
-            $length = 8;
-            $pass = substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, $length);
-            $m_pass = md5($pass);
-            $query = "update users
-                      set password = '$m_pass'
-                      where email = '$this->email'";
-
-            if($this->query($query)) return $pass;
-            return null;
-        }
-    }
-
 }
