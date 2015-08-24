@@ -10,7 +10,7 @@ class My_Class_Acl extends Zend_Acl
         // Add a role called user, which inherits from guest
         $this->addRole(new Zend_Acl_Role('user'), 'guest');
         // Add a role called admin, which inherits from user
-        $this->addRole(new Zend_Acl_Role('admin'), 'user');
+        $this->addRole(new Zend_Acl_Role('admin'));
 
         // Add some resources in the form controller::action
         $this->addResource(new Zend_Acl_Resource('index'));
@@ -29,6 +29,8 @@ class My_Class_Acl extends Zend_Acl
         $this->allow('guest', 'error');
         $this->allow('guest', 'auth', array('login', 'signup', 'verify', 'resetpass'));
 
+
+        $this->allow('user', 'auth');
         $this->allow('user', 'users');
         $this->deny('user', 'users', array('dashboard', 'delete'));
         $this->allow('user', 'products', array('index', 'shop', 'view', 'mycart'));

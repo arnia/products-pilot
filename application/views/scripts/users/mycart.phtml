@@ -24,37 +24,13 @@
                 <td> <?php echo $product->name ?> </td>
                 <td> <?php echo $product->category ?></td>
                 <td class="col-md-2">
-                    <?php
-
-                        $this->upForm->setAction( $this->url(array('controller' => 'users','action' => 'updatecart'), null, true));
-                        $this->upForm->setName ("upForm$i");
-                        $this->upForm->getElement('product_id')->setValue($product->id);
-                        $this->upForm->getElement('quantity')->setValue($product->quantity);
-
-                        echo $this->upForm;
-
-                    ?>
-                    <!--<form  name = '<?php /*echo "upForm$i" */?>' action='updatecart' method='post' >
-                        <input class="col-md-6" min='0' max='100' type="number" step="1" name="nr" value="<?php /*echo $product->nr_products */?>">
-                        <input type = 'hidden' name = 'product_id' value = <?php /*echo $product->id */?> >
-                    </form>-->
+                    <?php echo $this->forms['upForm'][$i] ?>
                     <a href="javascript: document.<?php echo "upForm$i" ?>.submit();">
                         <span style="margin-left:10px;" class="glyphicon glyphicon-ok"></span>
                     </a>
                 </td>
                 <td  class="col-md-1">
-                    <?php
-
-                        $this->delForm->setAction( $this->url(array('controller' => 'users','action' => 'delfromcart'), null, true));
-                        $this->delForm->setName ("delForm$i");
-                        $this->delForm->getElement('product_id')->setValue($product->id);
-
-                        echo $this->delForm;
-
-                    ?>
-                    <!--<form  id='<?php /*echo "delForm$i" */?>' action='delfromcart' method='post' >
-                        <input type = 'hidden' name = 'product_id' value = <?php /*echo $product->id */?> >
-                    </form>-->
+                    <?php echo $this->forms['delForm'][$i] ?>
                     <a href="javascript: delFromCart('<?php echo "delForm$i"?>')">
                         <span class="glyphicon glyphicon-remove" style="color:red;margin-left:10px;"></span>
                     </a>
@@ -67,10 +43,18 @@
         ?>
         </tbody>
     </table>
-    <div class="panel-footer"><p class="text-right" style="margin-right:130px;font-weight: bold;" >Total price: <?php echo $total ?></p></div>
+    <div class="panel-footer"><p class="text-right" style="margin-right:130px;font-weight: bold;" >Total price: <?php echo number_format((float)$total,2,'.','') ?></p></div>
 </div>
-<a href="paypal"><img src="https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif" align="right" style="margin-left:7px;"></a>
+
+<a href="#"><img src="https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif" align="right" style="margin-left:7px;" onclick = "processPayment()" ></a>
 <?php } else  echo "Your shopping cart is empty !" ?>
+
+<div id = "divButton" >
+    <!--<button class="btn btn-lg btn-info">
+        <span class="glyphicon glyphicon-refresh spinning"></span> Processing...
+    </button>-->
+</div>
+
 <hr>
 <!--<a href='<?php /*echo $this->url(array('controller' => 'products', 'action' => 'shop'), 'default', true);*/?>' type='button' class='btn btn-default btn-md'>Back to Shop</a>-->
 

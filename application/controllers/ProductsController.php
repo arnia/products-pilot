@@ -47,10 +47,22 @@ class ProductsController extends Zend_Controller_Action {
 
         $this->view->headScript()->appendFile(JS_DIR . '/' . self::VALIDATE_FORM . '.js');
 
-        $this->view->form = new Application_Form_DeleteProduct();
-
         $this->view->products = $productMapper->fetchAll();
 
+        $forms = array();
+
+        foreach($this->view->products as $i => $product){
+
+            $delForm = new Application_Form_DeleteProduct();
+            $delForm->setAction( $this->view->url(array('controller' => 'products','action' => 'delete'), null, true));
+            $delForm->addAttribs(array(
+                'id' => 'delForm' . $product->id,
+                'onsubmit' => self::VALIDATE_FORM . "('delForm" . $product->id . "')",
+            ));
+            $delForm->getElement('product_id')->setValue($product->id);
+            $forms['delProductForm'][] = $delForm;
+        }
+        $this->view->forms = $forms;
     }
 
     public function viewAction(){
@@ -132,24 +144,25 @@ class ProductsController extends Zend_Controller_Action {
 
                     if($upload->isValid($field)) {
                         if (!$upload->receive($field)) {
-                            echo '<h1>Oops</h1><p>Please correct the following errors: <hr /></p>';
-
+                            $isValid = false;
                             foreach ($upload->getMessages() as $key => $val) {
-                                echo '<p><strong>' . $key . '</strong><br />' . $val . '</p>';
+                                $this->_helper->getHelper('FlashMessenger')->addMessage($val, 'error');
                             }
-                            die;
-                            //return;
                         }
                     }
-                    else {
+                    else{
                         $isValid = false;
-                        echo 'Is not valid ' . $field;
+                        $this->_helper->getHelper('FlashMessenger')->addMessage($file['name'] . " is not valid $field", 'error');
+                        //return $this->_helper->redirector('save');
                     }
                 }
 
                 if ($upload->hasErrors()) {
                     $errors = $upload->getMessages();
-                    var_dump($errors);
+                    foreach ($errors as $error){
+                        $this->_helper->getHelper('FlashMessenger')->addMessage("$error", 'error');
+                    }
+                    return $this->_helper->redirector('save');
                 }
 
                 if($isValid){
@@ -248,7 +261,7 @@ class ProductsController extends Zend_Controller_Action {
             'label'      => 'Price:',
             'id'         => 'price',
             'placeholder'=> 'Type something..',
-            'value'      =>  number_format($product->price, 2),
+            'value'      =>  number_format((float)$product->price, 2),
             'class'      => 'form-control',
             'min'        => self :: MIN,
             'max'        => self :: MAX,

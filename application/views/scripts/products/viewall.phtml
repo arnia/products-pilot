@@ -35,16 +35,7 @@
             <td> <a href="<?php echo $editPath?>"><img width="150px" src = "<?php if ($product->image) echo RUPLOADS_IMAGES . '/' . $product->image; else echo IMAGE_NOT_FOUND ?>" ></a>  </td>
             <td> <?php echo substr($product->description,0,20) ?></td>
             <td>
-                <?php
-
-                    $this->form->setAction( $this->url(array('controller' => 'products','action' => 'delete'), null, true));
-                    $this->form->addAttribs(array(
-                       'id' => 'delForm' . $product->id,
-                        'onsubmit' => "validateForm('delForm" . $product->id . "')",
-                    ));
-                    $this->form->getElement('product_id')->setValue($product->id);
-                    echo $this->form;
-                ?>
+                <?php echo $this->forms['delProductForm'][$i] ?>
             </td>
         </tr>
 <?php } ?>

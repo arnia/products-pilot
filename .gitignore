@@ -1,7 +1,10 @@
-data/session/
+!data/session/
+data/session/*
 .idea/
-public/uploads
-logs
+!public/uploads/
+public/uploads/*
+!logs/
+logs/*
 
 
 # Composer

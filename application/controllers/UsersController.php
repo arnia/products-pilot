@@ -21,6 +21,7 @@ class UsersController extends Zend_Controller_Action {
     const VALIDATE_FORM = 'validateForm';
     const COUNT_CART = 'countCart';
     const ADD_TO_CART = 'addToCart';
+    const PROCESS_PAYMENT = 'processPayment';
 
 
     public function indexAction() {
@@ -49,6 +50,7 @@ class UsersController extends Zend_Controller_Action {
         $categoriesMapper = new Application_Model_CategoryMapper();
         $this->view->categories = $categoriesMapper->fetchAll();
 
+        $this->view->headScript()->appendFile(JS_DIR . '/' . self::PROCESS_PAYMENT . '.js');
         $this->view->headScript()->appendFile(JS_DIR . '/' . self::DELETE_FROM_CART . '.js');
         $this->view->headScript()->appendFile(JS_DIR . '/' . self::COUNT_CART . '.js');
         $this->view->headScript()->appendFile(JS_DIR . '/' . self::ADD_TO_CART . '.js');
@@ -60,7 +62,24 @@ class UsersController extends Zend_Controller_Action {
         //var_dump($userMapper->getShoppingCart($user_id));
 
         $this->view->shoppingcart = $userMapper->getShoppingCart($user_id);
-        $this->view->upForm = new Application_Form_UpdateCart();
+        $forms = array();
+        foreach($this->view->shoppingcart as $i => $product){
+            $upForm = new Application_Form_UpdateCart();
+            $upForm->setAction( $this->view->url(array('controller' => 'users','action' => 'updatecart'), null, true))
+                 ->setName ("upForm$i");
+            $upForm->getElement('product_id')->setValue($product->id);
+            $upForm->getElement('quantity')->setValue($product->quantity);
+            $forms['upForm'][] = $upForm;
+
+            $delForm = new Application_Form_DelFromCart();
+            $delForm->setAction( $this->view->url(array('controller' => 'users','action' => 'delfromcart'), null, true))
+                ->setName ("delForm$i");
+            $delForm->getElement('product_id')->setValue($product->id);
+            $forms['delForm'][] = $delForm;
+        }
+
+        $this->view->forms = $forms;
+
         $this->view->delForm = new Application_Form_DelFromCart();
 
         $this->_helper->layout->setLayout('shop');
@@ -124,32 +143,53 @@ class UsersController extends Zend_Controller_Action {
     public function paypalAction() {
 
 
-        Zend_Loader::loadFile('paypal_bootstrap.php', APPLICATION_PATH . "/../library/My/", true);
+        //Zend_Loader::loadFile('paypal_bootstrap.php', APPLICATION_PATH . "/../library/My/", true);
 
-        $cred = new OAuthTokenCredential(
-            "ASoFp5N8bjs0m3Czfyqocy9o_6ZuZOEQMaM1PB8H1h4uTFPYgPFePfIjBvruMIwUrZ9jtV1RLS7PGqIM",
-            "ECk662STXzf0U4aXr_JgHWxDjXVsPMCQQN2BTDTCRqvotxnub2kD-3dHqhj9z1-TxHgf0KQpY9c0vCXv");
-
-        //$cred = "Bearer $accessToken";
-        $apiContext = new ApiContext($cred, 'Request' . time());
-
-        $item1 = new Item();
-        $item1->setName('Granola bars');
-        $item1->setCurrency('USD');
-        $item1->setQuantity(5);
-        $item1->setSku("321321"); // Similar to `item_number` in Classic API
-        $item1->setPrice(2);
+        require (APPLICATION_PATH . "/../library/My/paypal_bootstrap.php");
 
         $payer = new Payer();
         $payer->setPaymentMethod("paypal");
 
+        $auth = Zend_Auth::getInstance();
+        if($auth->hasIdentity()) $user_id = $auth->getIdentity()->id;
+        else return;
+
+        $userMapper = new Application_Model_UserMapper();
+        $results = $userMapper->getShoppingCart($user_id);
+        $items = array();
+        $subTotal = 0;
+        foreach($results as $i => $result) {
+            $item = new Item();
+            $item->setName($result->name)
+                ->setCurrency('USD')
+                ->setQuantity($result->quantity)
+                ->setSku($i + 1) // Similar to `item_number` in Classic API
+                ->setPrice($result->price);
+            $items[] = $item;
+            $subTotal += $result->quantity * (float)number_format($result->price,2);
+        }
+
+        $itemList = new ItemList();
+        $itemList->setItems($items);
+
+        $shippingTax = 1; //
+
+        $details = new Details();
+        $details->setShipping($shippingTax)
+                ->setTax(0)
+                ->setSubtotal($subTotal);
+        $total = $shippingTax + $subTotal;
+
         $amount = new Amount();
-        $amount->setCurrency("USD");
-        $amount->setTotal("12");
+        $amount->setCurrency("USD")
+                ->setTotal($total)
+                ->setDetails($details);
 
         $transaction = new Transaction();
-        $transaction->setDescription("creating a payment");
-        $transaction->setAmount($amount);
+        $transaction->setAmount($amount)
+                    ->setItemList($itemList)
+                    ->setDescription("Payment description")
+                    ->setInvoiceNumber(uniqid());
 
         $baseUrl = getBaseUrl();
         $redirectUrls = new RedirectUrls();
@@ -162,10 +202,24 @@ class UsersController extends Zend_Controller_Action {
         $payment->setRedirectUrls($redirectUrls);
         $payment->setTransactions(array($transaction));
 
-        var_dump($result = $payment->create($apiContext));
-        var_dump($result->links[1]->href);
+        $result = $payment->create($apiContext);
 
-        echo "<a href = '" .$result->links[1]->href ."' >click</a>";
+        //var_dump($result);
+
+        $response = array(
+            'error' => 'false',
+            'approvalLink' => $payment->getApprovalLink()
+        );
+
+        /* Send as JSON */
+        header("Content-Type: application/json", true);
+
+        /* Return JSON */
+        echo json_encode($response);
+
+        /* Stop Execution */
+        exit;
+
     }
 
     public function exepaypalAction(){

@@ -16,20 +16,11 @@
                         </a>
                         <div class="carousel-caption">
                             <h3><?php echo $newproduct->name ?></h3>
-                            <p><?php echo $newproduct->description ?></p>
+                            <p><?php echo substr($newproduct->description,0,80) ?></p>
                         </div>
                     </div>
                 <?php } ?>
 
-                <!--<div class="item">
-                    <img class="slide-image" src="http://placehold.it/800x300" alt="">
-                </div>
-                <div class="item">
-                    <img class="slide-image" src="http://placehold.it/800x300" alt="">
-                </div>
-                <div class="item">
-                    <img class="slide-image" src="http://placehold.it/800x300" alt="">
-                </div>-->
             </div>
             <a class="left carousel-control" href="#carousel-example-generic" data-slide="prev">
                 <span class="glyphicon glyphicon-chevron-left"></span>

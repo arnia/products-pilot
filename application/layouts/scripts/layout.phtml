@@ -106,7 +106,7 @@
                 <div class='alert alert-info' style='margin-top:10px'>
                     <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                     <?php foreach ($flashMessenger->getMessages('info') as $msg): ?>
-                        <strong></strong> <?php echo $msg ?>
+                        <strong></strong> <?php echo $msg . "<br>" ?>
                     <?php endforeach; ?>
                 </div>
             <?php $flashMessenger->clearMessages('info'); endif; ?>
@@ -115,7 +115,7 @@
                 <div class='alert alert-success' style='margin-top:10px'>
                     <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                     <?php foreach ($flashMessenger->getMessages('success') as $msg): ?>
-                        <strong></strong> <?php echo $msg ?>
+                        <strong></strong> <?php echo $msg . "<br>"  ?>
                     <?php endforeach; ?>
                 </div>
             <?php $flashMessenger->clearMessages('success'); endif; ?>
@@ -124,7 +124,7 @@
                 <div class='alert alert-danger' style='margin-top:10px'>
                     <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                     <?php foreach ($flashMessenger->getMessages('error') as $msg): ?>
-                        <strong></strong> <?php echo $msg ?>
+                        <strong></strong> <?php echo $msg . "<br>"  ?>
                     <?php endforeach; ?>
                 </div>
             <?php $flashMessenger->clearMessages('error'); endif;?>
