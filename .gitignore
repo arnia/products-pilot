@@ -1,11 +1,9 @@
-!data/session/
-data/session/*
+data/session/**
 .idea/
-!public/uploads/
-public/uploads/*
-!logs/
-logs/*
+public/uploads/images/**
+public/uploads/data/**
 
+logs/**
 
 # Composer
 vendor
