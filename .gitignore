@@ -2,7 +2,6 @@ data/session/**
 .idea/
 public/uploads/images/**
 public/uploads/data/**
-
 logs/**
 
 # Composer
