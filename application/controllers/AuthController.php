@@ -28,7 +28,8 @@ class AuthController  extends Zend_Controller_Action  {
                     $userMapper->insert($user);
 
                     $mailMapper = new Application_Model_MailsettingMapper();
-                    $mailsetting = $mailMapper->getConfig();
+                    $default_config_id = $mailMapper->getDefault();
+                    $mailsetting = $mailMapper->getConfig($default_config_id);
 
                     $obj = new My_Class_Cript();
 
@@ -63,13 +64,17 @@ class AuthController  extends Zend_Controller_Action  {
                     }
                 }
                 catch (Exception $e){
-                    $userMapper->delete($user);
-                    //var_dump($e->getMessage());
-                    $this->_helper->getHelper('FlashMessenger')->addMessage($e->getMessage(), 'error');
+                    $message = $e->getMessage();
+                    if ($e instanceof Zend_Db_Statement_Mysqli_Exception) {
+                        if ($e->getCode() == 1062) $message = 'This email is already registered';
+                        else $message = 'Something goes wrong';
+                    } else {
+                        $userMapper->delete($user);
+                        $message = 'Mail service error: ' . $e->getMessage();
+                    }
+                    $this->_helper->getHelper('FlashMessenger')->addMessage($message, 'error');
                     $this->_helper->redirector('signup');
                 }
-
-                //$this->_helper->redirector('login');
             }
             else{
                 foreach ($form->getMessages() as $error){
@@ -249,13 +254,11 @@ class AuthController  extends Zend_Controller_Action  {
                     $update_fields = array(
                         'password'  => $new_pass,
                     );
-                    $result = $userMapper->getDbTable()->update($update_fields, array('email = ?' => $data['email']));
-                    if( !$result ) throw new ErrorException('Something goes wrong!');
-
 
                     //send email with new credentials
                     $mailMapper = new Application_Model_MailsettingMapper();
-                    $mailsetting = $mailMapper->getConfig();
+                    $default_config_id = $mailMapper->getDefault();
+                    $mailsetting = $mailMapper->getConfig($default_config_id);
 
                     $obj = new My_Class_Cript();
 
@@ -278,13 +281,20 @@ class AuthController  extends Zend_Controller_Action  {
                     $mail->setSubject('New Password');
 
                     if ($mail->send($transport)) {
+                        $result = $userMapper->getDbTable()->update($update_fields, array('email = ?' => $data['email']));
+                        if( !$result ) throw new ErrorException('Something goes wrong!');
                         $this->_helper->getHelper('FlashMessenger')->addMessage('Check your email for new password', 'info');
                         return $this->_helper->redirector('login');
                     }
                 }
                 catch (Exception $e){
-                    //var_dump($e->getMessage());
-                    $this->_helper->getHelper('FlashMessenger')->addMessage($e->getMessage(), 'error');
+                    //var_dump($e);
+                    if ($e instanceof ErrorException) {
+                        $message = $e->getMessage();
+                    } else {
+                        $message = 'Mail service error: ' . $e->getMessage();
+                    }
+                    $this->_helper->getHelper('FlashMessenger')->addMessage($message, 'error');
                     $this->_helper->redirector('resetpass');
                 }
 

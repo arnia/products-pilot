@@ -25,57 +25,65 @@ class Application_Model_MailsettingMapper
     }
 
     public function getDefault(){
-        $query = "select id from mailsettings where def=1";
-        if($result = $this->query($query,1)) return $result->id;
-        else return 0;
+        $result = $this->getDbTable()->fetchRow($this->getDbTable()->select('id')->where('default_config = ?', 1));
+        if(count($result) == 0 ) return 0;
+        else return $result['id'];
     }
 
     public function setDefault($id){
-        $id = $this->_mysqli->escape_string($id);
-        $query = "update mailsettings set def=0";
-        $ok = $this->query($query);
-        $query = "update mailsettings set def=1
-                  where id = $id";
-        $ok =ok && $this->query($query);
-        //var_dump($query);
-        return $ok;
+        $default_id = $this->getDefault();
+        $result1 = $this->getDbTable()->update(array('default_config' => 0), array('id = ?' => $default_id));
+        $result2 = $this->getDbTable()->update(array('default_config' => 1), array('id = ?' => $id));
+        return $result1 && $result2;
     }
 
     public function update($id,$json){
-        $id = $this->_mysqli->escape_string($id);
-        $query = "update mailsettings set smtp_config='$json'
-                      where id=$id ";
-        //var_dump($query);
-        return $this->query($query);
+        $result = $this->getDbTable()->update(array('smtp_config' => $json), array('id = ?' => $id));
+        return $result;
     }
 
     public function delete($id){
-        $id = $this->_mysqli->escape_string($id);
-        $query = "delete from mailsettings where id = $id";
-        return $this->query($query);
-    }
-
-    public function getAllSettings(){
-        $query = "select * from mailsettings";
-        return $this->query($query);
+        $result = $this->getDbTable()->delete(array('id = ?' => $id));;
+        return $result;
     }
 
 
 
-    public function getConfig(){
 
-        $result = $this->getDbTable()->fetchRow($this->getDbTable()->select('smtp_config'));
+    public function getConfig($id){
+        $result = $this->getDbTable()->fetchRow($this->getDbTable()->select('smtp_config')->where('id = ?',$id));
         if(count($result) == 0 ) throw new Exception('Mail configuration missing');
         $cfg = json_decode($result->smtp_config, true);
         $mailSetting = new Application_Model_Mailsetting($cfg);
         return $mailSetting;
     }
 
-    public function add($json){
+    public function fetchAll(){
+        $resultSet = $this->getDbTable()->fetchAll();
+        $entries   = array();
+        foreach ($resultSet as $row) {
+            $cfg = json_decode($row->smtp_config, true);
+            $entry = new Application_Model_Mailsetting($cfg);
+            $entry->setId($row->id);
+            $entry->setDefaultConfig($row->default_config);
+            $entries[] = $entry;
+        }
+        return $entries;
+    }
+
+    public function save(Application_Model_Mailsetting $product)
+    {
         $data = array(
-            'smtp_config' => $json,
+            'id'          => $product->id,
+            'smtp_config' => $product->getJsonConfig(),
         );
-        $this->getDbTable()->insert($data);
+
+        if (null === ($id = $product->getId())) {
+            unset($data['id']);
+            $this->getDbTable()->insert($data);
+        } else {
+            $this->getDbTable()->update($data, array('id = ?' => $id));
+        }
     }
 
 }

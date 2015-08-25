@@ -4,8 +4,6 @@ class Application_Model_Category {
     private $id;
     private  $name;
 
-
-
     public function __set($name, $value)
     {
         $method = 'set' . $name;

@@ -26,7 +26,6 @@ class Application_Form_ResetPass extends Zend_Form {
         ));
 
         $validator = new Zend_Validate_EmailAddress();
-        $validator->setOptions(array('domain' => false));
 
         $input->addValidators(array($validator,new Zend_Validate_NotEmpty()));
         $input->addDecorator($decoratorField);

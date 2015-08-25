@@ -23,7 +23,7 @@ create table if not exists categories(
 create table if not exists products(
     id int(10) primary key auto_increment,
     name varchar(256) not null,
-    category_id int(1),
+    category_id int(10),
     price float(10,2) not null,
     file varchar(256),
     image varchar(256),
@@ -33,7 +33,8 @@ create table if not exists products(
 
 create table if not exists mailsettings (
     id int(10) primary key auto_increment,
-    smtp_config mediumtext
+    smtp_config mediumtext,
+    default_config boolean default false
 );
 
 create table if not exists shoppingcarts (
@@ -49,7 +50,8 @@ create table if not exists shoppingcarts (
 create table if not exists orders (
     id int(10) primary key auto_increment,
     user_id int(10),
-    email varchar(32) not null unique,
+    state varchar(32) not null,
+    email varchar(32) not null,
     create_date timestamp default current_timestamp,
     foreign key (user_id) references users(id) on delete set null on update cascade
 );
@@ -57,11 +59,14 @@ create table if not exists orders (
 create table if not exists ordered_products (
     id int(10) primary key auto_increment,
     order_id int(10),
+    product_id int(10),
     name varchar(256) not null,
-    category_id int(1),
+    category_id int(10),
     price float(10,2) not null,
+    quantity int(10) not null,
     foreign key (category_id) REFERENCES categories(id) on delete set null on update cascade,
-    foreign key (order_id) references orders(id) on delete cascade on update cascade
+    foreign key (order_id) references orders(id) on delete cascade on update cascade,
+    foreign key (product_id) references products(id) on delete set null on update cascade
 );
 
 

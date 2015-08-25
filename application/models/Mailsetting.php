@@ -1,13 +1,19 @@
 <?php
 
 class Application_Model_Mailsetting {
+    private $id;
     private $host;
     private $port;
     private $stype;
     private $email;
     private $password;
+    private $default_config;
+    private $json_config;
 
     public function __construct($params = NULL){
+        if(isset($params['id'])){
+            $this->id = $params['id'];
+        }
         if(isset($params['email'])){
             $this->email = $params['email'];
         }
@@ -22,6 +28,12 @@ class Application_Model_Mailsetting {
         }
         if(isset($params['port'])){
             $this->port = $params['port'];
+        }
+        if(isset($params['default_config'])){
+            $this->default_config = $params['default_config'];
+        }
+        if(isset($params['json_config'])){
+            $this->json_config = $params['json_config'];
         }
     }
 
@@ -43,6 +55,54 @@ class Application_Model_Mailsetting {
             throw new Exception('Invalid product property');
         }
         return $this->$method();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getJsonConfig()
+    {
+        return $this->json_config;
+    }
+
+    /**
+     * @param mixed $json_config
+     */
+    public function setJsonConfig($json_config)
+    {
+        $this->json_config = $json_config;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param mixed $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDefaultConfig()
+    {
+        return $this->default_config;
+    }
+
+    /**
+     * @param mixed $default_config
+     */
+    public function setDefaultConfig($default_config)
+    {
+        $this->default_config = $default_config;
     }
 
     /**

@@ -55,7 +55,6 @@ class Application_Model_UserMapper
     }
 
     public function delete(Application_Model_User $user){
-
         return $this->getDbTable()->delete(array('email = ?' => $user->email));
     }
 
@@ -98,7 +97,7 @@ class Application_Model_UserMapper
                                                              array('id', 'name', 'price'))
                                                          ->join(array('c' => 'categories'),
                                                              'c.id = p.category_id',
-                                                             array('category' => 'c.name'))
+                                                             array('category' => 'c.name', 'c_id' => 'c.id'))
                                                          ->join(array('s' => 'shoppingcarts'),
                                                              's.product_id = p.id',
                                                              array('quantity' => 's.quantity'))
@@ -109,36 +108,15 @@ class Application_Model_UserMapper
 
 
 
-
-
-    public function updatecart($user_id, $product_id,$quantity){
-
-        $this->query("delete from shoppingcarts where user_id = $user_id && product_id = $product_id");
-
-        for($i = 0;$i < $nr;$i++){
-            $this->query("insert into shoppingcarts values ($user_id, $product_id)");
-        }
-    }
-
-    public function delFromCart($product_id){
-        $product_id = $this->_mysqli->real_escape_string($product_id);
-        $query = "delete from shoppingcarts where product_id = $product_id";
-        if($this->query($query)) return null;
-        return 'Database Error';
-    }
-
-
-
     public function umkAdmin($admin_id){
-        $admin_id = $this->_mysqli->real_escape_string($admin_id);
-        $query = "delete from admins where id = $admin_id";
-        if($this->query($query)) return null;
-        return 'Database Error';
+        $db_adapter = $this->getDbTable()->getAdapter();
+        $db = Zend_Db::factory('Mysqli',$db_adapter->getConfig());
+        $db->delete('admins', array('user_id = ?' => $admin_id));
     }
 
     public function mkAdmin($user_id){
-        $query = "insert into admins(user_id) values ('$user_id')";
-        if($this->query($query)) return null;
-        return 'Database Error';
+        $db_adapter = $this->getDbTable()->getAdapter();
+        $db = Zend_Db::factory('Mysqli',$db_adapter->getConfig());
+        $db->insert('admins', array('user_id' => $user_id));
     }
 }

@@ -11,6 +11,7 @@ use PayPal\Api\RedirectUrls;
 use PayPal\Api\Transaction;
 use PayPal\Api\PaymentExecution;
 use PayPal\Rest\ApiContext;
+use PayPal\Api\Sale;
 
 
 class UsersController extends Zend_Controller_Action {
@@ -31,18 +32,130 @@ class UsersController extends Zend_Controller_Action {
     public function dashboardAction() {
 
         $this->view->headScript()->appendFile(JS_DIR . '/' . self::VALIDATE_FORM . '.js');
+        $auth = Zend_Auth::getInstance();
+        if ($auth->hasIdentity()) {
+            $currentUser = $auth->getIdentity();
+        }
 
         $productMapper = new Application_Model_ProductMapper();
-        $this->view->form = new Application_Form_DeleteProduct();
         $this->view->products = $productMapper->fetchAll();
 
         $userMapper = new Application_Model_UserMapper();
         $this->view->users = $userMapper->fetchAll();
 
-        $auth = Zend_Auth::getInstance();
-        if ($auth->hasIdentity()) {
-            $this->view->currentUser = $auth->getIdentity()->email;
+        $mailMapper = new Application_Model_MailsettingMapper();
+        $this->view->mailSettings = $mailMapper->fetchAll();
+
+        $orderMapper = new Application_Model_OrderMapper();
+        $this->view->orders = $orderMapper->fetchAll();
+
+        $forms = array();
+        foreach ($this->view->mailSettings as $setting) {
+            $form = new Application_Form_SubmitButton();
+            $form->setAction( $this->view->url(array('controller' => 'mailsettings','action' => 'delete'), null, true));
+            $form->addAttribs(array(
+                'id' => 'delSettingForm' . $setting->id,
+                'onsubmit' => self::VALIDATE_FORM . "('delSettingForm" . $setting->id . "')",
+            ));
+            $form->getElement('id')->setValue($setting->id);
+            $form->getElement('submit')->setAttribs(array (
+                'class' => 'btn btn-danger',
+            ));
+            $form->getElement('submit')->setLabel('Delete');
+            $forms['delSettingForm'][] = $form;
+
+            $form = new Application_Form_SubmitButton();
+
+            if($setting->getDefaultConfig()) {
+                $form->getElement('submit')->setAttribs(array (
+                    'class' => 'btn btn-primary disabled',
+                ));
+                $form->getElement('submit')->setLabel('Default');
+            } else {
+                $form->addAttribs(array(
+                    'id' => 'defSettingForm' . $setting->id,
+                    'onsubmit' => self::VALIDATE_FORM . "('defSettingForm" . $setting->id . "')",
+                ));
+                $form->setAction( $this->view->url(array('controller' => 'mailsettings','action' => 'mkdefault'), null, true));
+                $form->getElement('submit')->setAttribs(array (
+                    'class' => 'btn btn-primary',
+                ));
+                $form->getElement('submit')->setLabel('Make Default');
+                $form->getElement('id')->setValue($setting->id);
+            }
+            $forms['defSettingForm'][] = $form;
+
+        } //initialize forms
+
+        foreach ($this->view->users as $user) {
+            $form = new Application_Form_SubmitButton();
+            if($user->id == $currentUser->id || $user->getAdminId() == 1) { // is current user or is superuser
+                $form->getElement('submit')->setAttribs(array (
+                    'class' => 'btn btn-danger disabled',
+                ));
+                $form->getElement('submit')->setLabel('Delete');
+            } else {
+                $form->setAction($this->view->url(array('controller' => 'users', 'action' => 'delete'), null, true));
+                $form->addAttribs(array(
+                    'id' => 'delUserForm' . $user->id,
+                    'onsubmit' => self::VALIDATE_FORM . "('delUserForm" . $user->id . "')",
+                ));
+                $form->getElement('id')->setValue($user->id);
+                $form->getElement('submit')->setAttribs(array(
+                    'class' => 'btn btn-danger',
+                ));
+                $form->getElement('submit')->setLabel('Delete');
+            }
+            $forms['delUserForm'][] = $form;
+
+
+            $form = new Application_Form_SubmitButton();
+            if($user->id == $currentUser->id || $user->getAdminId() == 1 || !$user->verified) {
+                $form->getElement('submit')->setAttribs(array (
+                    'class' => 'btn btn-primary disabled',
+                ));
+                $form->getElement('submit')->setLabel('Make Admin');
+            } else {
+                if($user->getAdminId()) {
+                    $form->addAttribs(array(
+                        'id' => 'umkUserForm' . $user->id,
+                        'onsubmit' => self::VALIDATE_FORM . "('umkUserForm" . $user->id . "')",
+                    ));
+                    $form->setAction($this->view->url(array('controller' => 'users', 'action' => 'umkadmin'), null, true));
+                    $form->getElement('submit')->setAttribs(array(
+                        'class' => 'btn btn-primary',
+                    ));
+                    $form->getElement('submit')->setLabel('Unmake Admin');
+                } else {
+                    $form->addAttribs(array(
+                        'id' => 'mkUserForm' . $user->id,
+                        'onsubmit' => self::VALIDATE_FORM . "('mkUserForm" . $user->id . "')",
+                    ));
+                    $form->setAction($this->view->url(array('controller' => 'users', 'action' => 'mkadmin'), null, true));
+                    $form->getElement('submit')->setAttribs(array(
+                        'class' => 'btn btn-primary',
+                    ));
+                    $form->getElement('submit')->setLabel('Make Admin');
+                }
+                $form->getElement('id')->setValue($user->id);
+            }
+            $forms['mkUserForm'][] = $form;
+        } // initialize forms
+
+        foreach($this->view->products as $i => $product){
+
+            $delForm = new Application_Form_DeleteProduct();
+            $delForm->setAction( $this->view->url(array('controller' => 'products','action' => 'delete'), null, true));
+            $delForm->addAttribs(array(
+                'id' => 'delForm' . $product->id,
+                'onsubmit' => self::VALIDATE_FORM . "('delForm" . $product->id . "')",
+            ));
+            $delForm->getElement('product_id')->setValue($product->id);
+            $forms['delProductForm'][] = $delForm;
         }
+
+        $this->view->forms = $forms;
+
     }
 
     public function mycartAction() {
@@ -108,7 +221,6 @@ class UsersController extends Zend_Controller_Action {
                 }
             }
         }
-
     }
 
     public function delfromcartAction() {
@@ -137,7 +249,45 @@ class UsersController extends Zend_Controller_Action {
     }
 
     public function deleteAction() {
+        $request = $this->getRequest();
+        $form = new Application_Form_SubmitButton();
 
+        if ($this->getRequest()->isPost()) {
+            if ($form->isValid($request->getPost())) {
+                $data = $form->getValues();
+                $productMapper = new Application_Model_UserMapper();
+                if(isset($data['id']))  $productMapper->getDbTable()->delete(array('id = ?' => $data['id']));
+                return $this->_helper->redirector('dashboard');
+            }
+        }
+    }
+
+    public function mkadminAction() {
+        $request = $this->getRequest();
+        $form = new Application_Form_SubmitButton();
+
+        if ($this->getRequest()->isPost()) {
+            if ($form->isValid($request->getPost())) {
+                $data = $form->getValues();
+                $productMapper = new Application_Model_UserMapper();
+                if(isset($data['id']))  $productMapper->mkAdmin($data['id']);
+                return $this->_helper->redirector('dashboard');
+            }
+        }
+    }
+
+    public function umkadminAction() {
+        $request = $this->getRequest();
+        $form = new Application_Form_SubmitButton();
+
+        if ($this->getRequest()->isPost()) {
+            if ($form->isValid($request->getPost())) {
+                $data = $form->getValues();
+                $productMapper = new Application_Model_UserMapper();
+                if(isset($data['id']))  $productMapper->umkAdmin($data['id']);
+                return $this->_helper->redirector('dashboard');
+            }
+        }
     }
 
     public function paypalAction() {
@@ -147,80 +297,112 @@ class UsersController extends Zend_Controller_Action {
 
         require (APPLICATION_PATH . "/../library/My/paypal_bootstrap.php");
 
+        $error = false;
+        $approvalLink = null;
         $payer = new Payer();
         $payer->setPaymentMethod("paypal");
 
         $auth = Zend_Auth::getInstance();
-        if($auth->hasIdentity()) $user_id = $auth->getIdentity()->id;
-        else return;
+        if($auth->hasIdentity()) {
+            $user_id = $auth->getIdentity()->id;
+            $userMapper = new Application_Model_UserMapper();
+            $db_adapter = $userMapper->getDbTable()->getAdapter();
+            $db = Zend_Db::factory('Mysqli',$db_adapter->getConfig());
 
-        $userMapper = new Application_Model_UserMapper();
-        $results = $userMapper->getShoppingCart($user_id);
-        $items = array();
-        $subTotal = 0;
-        foreach($results as $i => $result) {
-            $item = new Item();
-            $item->setName($result->name)
-                ->setCurrency('USD')
-                ->setQuantity($result->quantity)
-                ->setSku($i + 1) // Similar to `item_number` in Classic API
-                ->setPrice($result->price);
-            $items[] = $item;
-            $subTotal += $result->quantity * (float)number_format($result->price,2);
-        }
+            $results = $userMapper->getShoppingCart($user_id);
+            $user = $userMapper->getDbTable()->find($user_id)->current();
 
-        $itemList = new ItemList();
-        $itemList->setItems($items);
+            $data = array(
+                'user_id'       => $user_id,
+                'state'         => 'created',
+                'email'         => $user->email,
+            );
+            $db->insert('orders', $data);
+            $lastOrderId = $db->lastInsertId('orders', 'id');
 
-        $shippingTax = 1; //
+            $items = array();
+            $subTotal = 0;
+            foreach($results as $i => $result) {
+                $item = new Item();
+                $item->setName($result->name)
+                    ->setCurrency('USD')
+                    ->setQuantity($result->quantity)
+                    ->setSku($i + 1) // Similar to `item_number` in Classic API
+                    ->setPrice($result->price);
+                    //->setDescription($result->c_id);
+                $db->insert('ordered_products', array(
+                    'product_id' => $result->id,
+                    'name' => $result->name,
+                    'category_id' => $result->c_id,
+                    'price' => $result->price,
+                    'quantity' => $result->quantity,
+                    'order_id' => $lastOrderId));
 
-        $details = new Details();
-        $details->setShipping($shippingTax)
+                $items[] = $item;
+                $subTotal += $result->quantity * (float)number_format($result->price,2);
+            }
+
+            $itemList = new ItemList();
+            $itemList->setItems($items);
+
+            $shippingTax = 1; //
+
+            $details = new Details();
+            $details->setShipping($shippingTax)
                 ->setTax(0)
                 ->setSubtotal($subTotal);
-        $total = $shippingTax + $subTotal;
+            $total = $shippingTax + $subTotal;
 
-        $amount = new Amount();
-        $amount->setCurrency("USD")
+            $amount = new Amount();
+            $amount->setCurrency("USD")
                 ->setTotal($total)
                 ->setDetails($details);
 
-        $transaction = new Transaction();
-        $transaction->setAmount($amount)
-                    ->setItemList($itemList)
-                    ->setDescription("Payment description")
-                    ->setInvoiceNumber(uniqid());
+            $transaction = new Transaction();
+            $transaction->setAmount($amount)
+                ->setCustom($lastOrderId)
+                ->setItemList($itemList)
+                ->setDescription("Payment description")
+                ->setInvoiceNumber(uniqid());
 
-        $baseUrl = getBaseUrl();
-        $redirectUrls = new RedirectUrls();
-        $redirectUrls->setReturnUrl($baseUrl . '/users/exepaypal/?success=true');
-        $redirectUrls->setCancelUrl($baseUrl .'/users/exepaypal/?cancel=true');
+            $baseUrl = getBaseUrl();
+            $redirectUrls = new RedirectUrls();
+            $redirectUrls->setReturnUrl($baseUrl . '/users/exepaypal/?success=true');
+            $redirectUrls->setCancelUrl($baseUrl .'/users/exepaypal/?cancel=true');
 
-        $payment = new Payment();
-        $payment->setIntent("sale");
-        $payment->setPayer($payer);
-        $payment->setRedirectUrls($redirectUrls);
-        $payment->setTransactions(array($transaction));
+            $payment = new Payment();
+            $payment->setIntent("sale");
+            $payment->setPayer($payer);
+            $payment->setRedirectUrls($redirectUrls);
+            $payment->setTransactions(array($transaction));
 
-        $result = $payment->create($apiContext);
+            try {
+                $result = $payment->create($apiContext);
 
-        //var_dump($result);
+            }
+            catch (Exception $ex) {
+                $error = true;
+            }
+
+            $approvalLink = $payment->getApprovalLink();
+        }
+        else $error = true;
+
 
         $response = array(
-            'error' => 'false',
-            'approvalLink' => $payment->getApprovalLink()
+            'error' => $error,
+            'approvalLink' => $approvalLink
         );
 
-        /* Send as JSON */
+        //Send as JSON
         header("Content-Type: application/json", true);
 
-        /* Return JSON */
+        //Return JSON
         echo json_encode($response);
 
-        /* Stop Execution */
+        //Stop Execution
         exit;
-
-    }
+    } //call from ajax
 
     public function exepaypalAction(){
         if (isset($_GET['success']) && $_GET['success'] == 'true') {
@@ -228,12 +410,7 @@ class UsersController extends Zend_Controller_Action {
             $token = $_GET['token'];
             $PayerID = $_GET['PayerID'];
 
-            Zend_Loader::loadFile('paypal_bootstrap.php', APPLICATION_PATH . "/../library/My/", true);
-
-            $cred = new OAuthTokenCredential(
-                "ASoFp5N8bjs0m3Czfyqocy9o_6ZuZOEQMaM1PB8H1h4uTFPYgPFePfIjBvruMIwUrZ9jtV1RLS7PGqIM",
-                "ECk662STXzf0U4aXr_JgHWxDjXVsPMCQQN2BTDTCRqvotxnub2kD-3dHqhj9z1-TxHgf0KQpY9c0vCXv");
-            $apiContext = new ApiContext($cred, 'Request' . time());
+            require (APPLICATION_PATH . "/../library/My/paypal_bootstrap.php");
 
             $payment = Payment::get($paymentId, $apiContext);
             $execution = new PaymentExecution();
@@ -243,10 +420,39 @@ class UsersController extends Zend_Controller_Action {
 
             $payment = Payment::get($paymentId, $apiContext);
 
-            var_dump($payment);
+            if ($payment->getState() == 'approved') {
 
+                $transactions = $payment->getTransactions();
+                $relatedResources = $transactions[0]->getRelatedResources();
+                $sale = $relatedResources[0]->getSale();
+                $saleId = $sale->getId();
+
+                $sale = Sale::get($saleId, $apiContext);
+
+
+                //var_dump($payment, $sale);
+                $order_id = $transactions[0]->getCustom();
+
+                $userMapper = new Application_Model_UserMapper();
+                $db_adapter = $userMapper->getDbTable()->getAdapter();
+                $db = Zend_Db::factory('Mysqli',$db_adapter->getConfig());
+
+                $data = array(
+                    'state'         => $sale->getState(),
+                );
+
+                $db->update('orders', $data, array('id = ?' => $order_id));
+                $row = $db->fetchRow($db->select('user_id')->from('orders')->where('id = ?', $order_id));
+
+                $db->delete('shoppingcarts',array('user_id = ?' => $row['user_id']));
+
+                $this->_helper->getHelper('FlashMessenger')->addMessage('Order Complete', 'success');
+                return $this->_helper->redirector('mycart');
+            };
         }
-
-
+        else {
+            $this->_helper->getHelper('FlashMessenger')->addMessage('Yout close the payment', 'error');
+        }
+        return $this->_helper->redirector('mycart');
     }
 }

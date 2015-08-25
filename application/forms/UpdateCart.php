@@ -23,7 +23,6 @@ class Application_Form_UpdateCart extends Zend_Form {
             )
         );
 
-
         // Add Quantity field
         $input = new Zend_Form_Element_Text('quantity',array(
             'required'   => true,

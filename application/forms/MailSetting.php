@@ -111,7 +111,7 @@ class Application_Form_MailSetting extends Zend_Form {
         //Add Submit button
 
         $input = new Zend_Form_Element_Submit('submit',array(
-            'Label'      => '',
+            'Label'      => ' ',
             'class'      => 'btn btn-info',
             'value'      => 'Add New Configuration',
         ));

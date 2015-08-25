@@ -7,19 +7,18 @@ function processPayment() {
         var span = document.createElement('span');
         span.className = "glyphicon glyphicon-refresh spinning";
         a.appendChild(span);
-        a.innerHTML = a.innerHTML + " Processing... "
+        a.innerHTML = a.innerHTML + " Processing... ";
         divButton.appendChild(a);
 
         var request = $.ajax({
             url: "paypal",
             type: "POST",
-            dataType: "json",
+            dataType: "json"
         });
 
         request.done(function (data) {
-
-            if (data.error == 'false') {
-                console.log(a.innerHTML);
+            if (!data.error) {
+                console.log(data.approvalLink);
                 a.innerHTML = 'Approval Link';
                 a.href = data.approvalLink;
             }
@@ -27,7 +26,8 @@ function processPayment() {
         });
 
         request.fail(function (jqXHR, textStatus) {
-            alert("Request failed: " + textStatus);
+            a.innerHTML = 'Processing Failed';
+            a.className = "btn btn-lg btn-warning";
         });
     }
 }

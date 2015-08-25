@@ -92,7 +92,6 @@ class ProductsController extends Zend_Controller_Action {
                 return $this->_helper->redirector('viewall');
             }
         }
-
     }
 
     public function saveAction(){
