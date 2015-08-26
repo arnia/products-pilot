@@ -125,6 +125,9 @@ class ProductsController extends Zend_Controller_Action {
                     $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
                     $filename = pathinfo($file['name'], PATHINFO_FILENAME);
 
+                    if(!file_exists(UPLOADS_IMAGES)) mkdir(UPLOADS_IMAGES, 0774, true);
+                    if(!file_exists(UPLOADS_DATA)) mkdir(UPLOADS_DATA, 0774, true);
+
                     // upload instructions for image
                     if ($field == 'image')
                     {

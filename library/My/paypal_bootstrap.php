@@ -4,6 +4,12 @@ if(!file_exists(APPLICATION_PATH . '/../vendor/autoload.php')) {
     echo "The 'vendor' folder is missing. You must run 'composer update' to resolve application dependencies.\nPlease see the README for more information.\n";
     exit(1);
 }
+
+
+
+if(!file_exists(APPLICATION_PATH . "/../logs")) mkdir(APPLICATION_PATH . "/../logs", 0774, true);
+
+
 require APPLICATION_PATH . '/../vendor/autoload.php';
 
 
@@ -14,6 +20,7 @@ use PayPal\Rest\ApiContext;
 
 require_once 'Zend/Loader/Autoloader.php';
 Zend_Loader_Autoloader::getInstance();
+
 
 $config = new Zend_Config_Ini(APPLICATION_PATH . '/../sdk_config.ini', 'Account');
 
@@ -36,7 +43,6 @@ function getApiContext($clientId, $clientSecret)
     }
     */
 
-
     // ### Api context
     // Use an ApiContext object to authenticate
     // API calls. The clientId and clientSecret for the
@@ -54,18 +60,18 @@ function getApiContext($clientId, $clientSecret)
     // 'define' block if you want to use static file
     // based configuration
 
-/*    $apiContext->setConfig(
+    $apiContext->setConfig(
         array(
             'mode' => 'sandbox',
             'log.LogEnabled' => true,
-            'log.FileName' => '../PayPal.log',
-            'log.LogLevel' => 'DEBUG', // PLEASE USE `FINE` LEVEL FOR LOGGING IN LIVE ENVIRONMENTS
+            'log.FileName' => APPLICATION_PATH . '/../logs/PayPal.log',
+            'log.LogLevel' => 'FINE', // PLEASE USE `FINE` LEVEL FOR LOGGING IN LIVE ENVIRONMENTS
             'validation.level' => 'log',
             'cache.enabled' => true,
             // 'http.CURLOPT_CONNECTTIMEOUT' => 30
             // 'http.headers.PayPal-Partner-Attribution-Id' => '123123123'
         )
-    );*/
+    );
 
     // Partner Attribution Id
     // Use this header if you are a PayPal partner. Specify a unique BN Code to receive revenue attribution.
