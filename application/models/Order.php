@@ -9,7 +9,6 @@ class Application_Model_Order
     private $email;
     private $create_date;
 
-
     public function __construct($params = NULL)
     {
 

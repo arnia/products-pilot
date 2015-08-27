@@ -5,10 +5,12 @@ class Application_Model_Product {
     private $id;
     private $name;
     private $category_id;
+    private $currency_id;
     private $price;
     private $file;
     private $image;
     private $description;
+    private $currency;
 
     public function __construct($params=NULL){
 
@@ -33,6 +35,9 @@ class Application_Model_Product {
         if(isset($params['description']) && !empty($params['description'])){
             $this->description = $params['description'];
         }
+        if(isset($params['currency_id']) && !empty($params['currency_id'])){
+            $this->currency_id = $params['currency_id'];
+        }
     }
 
 
@@ -52,6 +57,70 @@ class Application_Model_Product {
             throw new Exception('Invalid product property');
         }
         return $this->$method();
+    }
+
+
+    /**
+     * @return mixed
+     */
+    public function getCurrency()
+    {
+        return $this->currency;
+    }
+
+    /**
+     * @param mixed $currency
+     */
+    public function setCurrency($currency_id, $price)
+    {
+        if(!$currency_id) return;
+        $cy = new Application_Model_CurrencyMapper();
+        $code = $cy->find($currency_id)->code;
+        $currency = new Zend_Currency(array(
+            'value'         => $price,
+            'currency'      => $code,
+            'display'       => Zend_Currency::USE_SHORTNAME,
+            'position'      => Zend_Currency::RIGHT,
+            'format'        => '#0.# ',
+        ));
+        $this->currency = $currency;
+    }
+
+    public function setCurrencyExchanged($currency_id, $price, $userCurrencyId)
+    {
+        $cy = new Application_Model_CurrencyMapper();
+        $code = $cy->find($currency_id)->code;
+        $userCode = $cy->find($userCurrencyId)->code;
+        $currency = new Zend_Currency(array(
+            'value'         => 1,
+            'currency'      => $userCode,
+            'display'       => Zend_Currency::USE_SHORTNAME,
+            'position'      => Zend_Currency::RIGHT,
+            'format'        => '#0.# ',
+        ));
+        $exService = new My_Class_ExchangeService();
+        $currency->setService($exService);
+
+        $currency->setValue($price, $code);
+
+        //var_dump($currency);
+        $this->currency = $currency;//$cy->exchange($currency, $userCode);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCurrencyId()
+    {
+        return $this->currency_id;
+    }
+
+    /**
+     * @param mixed $currency_id
+     */
+    public function setCurrencyId($currency_id)
+    {
+        $this->currency_id = $currency_id;
     }
     /**
      * @return mixed

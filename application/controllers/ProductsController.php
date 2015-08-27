@@ -27,15 +27,23 @@ class ProductsController extends Zend_Controller_Action {
         $this->view->headScript()->appendFile(JS_DIR . '/' . self::ADD_TO_CART . '.js');
 
         $auth = Zend_Auth::getInstance();
-        if($auth->hasIdentity()) $this->view->user_id = $auth->getIdentity()->id;
+        $currentUser = null;
+        if($auth->hasIdentity()) $currentUser = $auth->getIdentity();
+        $this->view->user_id = ($currentUser) ? $currentUser->id : null;
+        $currency_id = ($currentUser) ? $currentUser->currency_id : null;
         $this->view->categories = $categoriesMapper->fetchAll();
 
-        if($category_id){
+        //var_dump($auth->getIdentity());
+
+        $this->view->products = $productMapper->fetchAll($currency_id, $category_id);
+
+        /*if($category_id){
             $this->view->products = $productMapper->getDbTable()->fetchAll($productMapper->getDbTable()->select()->where('category_id = ?', $category_id));
         }
         else {
-            $this->view->products = $productMapper->fetchAll();
-        }
+            $this->view->products = $productMapper->fetchAll(true,null);
+        }*/
+
         $this->view->newproducts = $productMapper->getDbTable()->fetchAll($productMapper->getDbTable()->select()->order('id DESC')->limit('3'));
 
 
@@ -69,10 +77,16 @@ class ProductsController extends Zend_Controller_Action {
         $this->view->headScript()->appendFile(JS_DIR . '/' . self::COUNT_CART . '.js');
         $id = $this->getParam('id');
         if($id){
+
+            $auth = Zend_Auth::getInstance();
+            $currentUser = null;
+            if($auth->hasIdentity()) $currentUser = $auth->getIdentity();
+            $currency_id = ($currentUser) ? $currentUser->currency_id : null;
+
             $productMapper = new Application_Model_ProductMapper();
             $categoriesMapper = new Application_Model_CategoryMapper();
             $this->view->categories = $categoriesMapper->fetchAll();
-            $this->view->product = $productMapper->getProductById($id);
+            $this->view->product = $productMapper->getProductById($id, $currency_id);
             $this->_helper->layout->setLayout('shop');
         }
         else {
@@ -182,7 +196,6 @@ class ProductsController extends Zend_Controller_Action {
                         $productMapper->delete_image($product->image);
                     }
 
-
                     $product = new Application_Model_Product($data);
 
                     $productMapper->save($product);
@@ -277,6 +290,27 @@ class ProductsController extends Zend_Controller_Action {
         $input->addValidators(array(new Zend_Validate_Float(), $min, $max, new Zend_Validate_NotEmpty()));
         $input->addDecorator($decoratorField);
         $elements[] = $input;
+
+        // Add ccurrency_id field
+        $select = new Zend_Form_Element_Select('currency_id',array(
+            'required'   => true,
+            'label'      => 'Currency Code:',
+            'id'         => 'currency_id',
+            'class'      => 'form-control',
+        ));
+
+        $currencyMapper = new Application_Model_CurrencyMapper();
+        $currencies = $currencyMapper->fetchAllActive();
+        foreach($currencies as $currency){
+            $select->addMultiOption($currency->getId(), $currency->getCode());
+        }
+        // set selected option
+        $validator = new Zend_Validate_StringLength(array('max' => 3));
+        $select->addValidators(array($validator,new Zend_Validate_NotEmpty()));
+        $select->setValue($product->getCurrencyId());
+        $select->addDecorator($decoratorField);
+        $elements[] = $select;
+
 
         if($id) {
             //Add File field
@@ -379,7 +413,7 @@ class ProductsController extends Zend_Controller_Action {
         $form->addElements($elements);
 
         $form->addDisplayGroup(
-            array('name', 'category_id' ,'price', 'file', 'image' ,'description','submit'),
+            array('name', 'category_id' ,'price', 'currency_id', 'file', 'image' ,'description','submit'),
             'displgrp',
             array(
                 'legend' => 'Add Products',

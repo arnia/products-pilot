@@ -20,6 +20,10 @@ class AuthController  extends Zend_Controller_Action  {
                 unset($data['password1']);
                 unset($data['password2']);
                 $data['hash'] = md5(rand(1, 1000));
+                $currencyMapper = new Application_Model_CurrencyMapper();
+                $currency = $currencyMapper->findByCode($data['currency_code']);
+                if(!$currency->id) $data['currency_id'] = $currencyMapper->getDefaultCurrency()->id;
+                else $data['currency_id'] = $currency->id;
                 $user = new Application_Model_User($data);
 
                 $userMapper = new Application_Model_UserMapper();

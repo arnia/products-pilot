@@ -57,6 +57,22 @@ class Application_Form_SignUp extends Zend_Form {
         $input->addDecorator($decoratorField);
         $elements[] = $input;
 
+        // Add code field
+        $input = new Zend_Form_Element_Text('currency_code',array(
+            'required'   => true,
+            'label'      => 'Currency Code:',
+            'id'         => 'currency_code',
+            'placeholder'=> 'Example USD',
+            'class'      => 'form-control',
+            'list'       => 'currencies',
+        ));
+        $validator = new Zend_Validate_StringLength(array('max' => 3));
+        $input->addValidators(array($validator,new Zend_Validate_NotEmpty()));
+        $currencyMapper = new Application_Model_CurrencyMapper();
+        $currencies = $currencyMapper->fetchAllActive();
+        $decoratorCurrency = new My_Decorator_CurrencyAutocomplete(null, $currencies);
+        $input->addDecorator($decoratorCurrency);
+        $elements[] = $input;
 
         //Add Submit button
         $input = new Zend_Form_Element_Submit('submit',array(
@@ -71,7 +87,7 @@ class Application_Form_SignUp extends Zend_Form {
         $this->addElements($elements);
 
         $this->addDisplayGroup(
-            array('email', 'password1' , 'password2', 'submit'),
+            array('email', 'password1' , 'password2', 'currency_code', 'submit'),
             'displgrp',
             array(
                 'decorators' => array(

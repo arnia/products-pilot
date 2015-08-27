@@ -4,6 +4,7 @@ class Application_Model_User {
     private $id;
     private $email;
     private $password;
+    private $currency_id;
     private $hash;
     private $verified;
     private $adminId;
@@ -26,6 +27,12 @@ class Application_Model_User {
         if(isset($params['verified']) && !empty($params['verified'])){
             $this->verified = $params['verified'];
         }
+        if(isset($params['verified']) && !empty($params['verified'])){
+            $this->verified = $params['verified'];
+        }
+        if(isset($params['currency_id']) && !empty($params['currency_id'])){
+            $this->currency_id = $params['currency_id'];
+        }
     }
 
     public function __set($name, $value)
@@ -46,6 +53,21 @@ class Application_Model_User {
         return $this->$method();
     }
 
+    /**
+     * @return mixed
+     */
+    public function getCurrencyId()
+    {
+        return $this->currency_id;
+    }
+
+    /**
+     * @param mixed $currency_id
+     */
+    public function setCurrencyId($currency_id)
+    {
+        $this->currency_id = $currency_id;
+    }
     /**
      * @return mixed
      */

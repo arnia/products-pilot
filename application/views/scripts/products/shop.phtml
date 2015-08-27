@@ -39,7 +39,7 @@
             <div class="thumbnail">
                 <img class = "thumbnail" src="<?php if ($product->image) echo RUPLOADS_IMAGES . '/' . $product->image; else echo IMAGE_NOT_FOUND ?>" alt="">
                 <div class="caption">
-                    <h4 class="pull-right">$ <?php echo number_format((float)$product->price,2,',','.') ?> </h4>
+                    <h4 class="pull-right"><?php echo $product->currency ?> </h4>
                     <h4><a href="<?php echo  $this->url(array('controller' => 'products','action' => 'view', 'id' => $product->id), null, true);?> "><?php echo $product->name ?></a> </h4>
                     <p><?php echo substr($product->description,0,80) ?></p>
                     <p>Attached file:

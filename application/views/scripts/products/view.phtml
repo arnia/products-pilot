@@ -4,7 +4,7 @@
             <div class="thumbnail">
                 <img class=" item img-responsive" src="<?php if ($this->product->image) echo RUPLOADS_IMAGES . '/' . $this->product->image; else echo IMAGE_NOT_FOUND ?>" alt="">
                 <div class="caption-full">
-                    <h4 class="pull-right">$ <?php echo number_format((float)$this->product->price,2,',','.') ?></h4>
+                    <h4 class="pull-right"><?php echo $this->product->currency ?></h4>
                     <h4><a href="#"><?php echo $this->product->name ?></a></h4>
                     <p><?php echo substr($this->product->description,0,80) ?></p>
                     <p>Attached file:

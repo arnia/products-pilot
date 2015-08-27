@@ -49,6 +49,9 @@ class UsersController extends Zend_Controller_Action {
         $orderMapper = new Application_Model_OrderMapper();
         $this->view->orders = $orderMapper->fetchAll();
 
+        $currencyMapper = new Application_Model_CurrencyMapper();
+        $this->view->currencies = $currencyMapper->fetchAll();
+
         $forms = array();
         foreach ($this->view->mailSettings as $setting) {
             $form = new Application_Form_SubmitButton();
@@ -169,14 +172,17 @@ class UsersController extends Zend_Controller_Action {
         $this->view->headScript()->appendFile(JS_DIR . '/' . self::ADD_TO_CART . '.js');
 
         $userMapper = new Application_Model_UserMapper();
+
         $auth = Zend_Auth::getInstance();
-        if($auth->hasIdentity()) $user_id = $auth->getIdentity()->id;
+        $currentUser = null;
+        if($auth->hasIdentity()) $currentUser = $auth->getIdentity();
+        $user_id = ($currentUser) ? $currentUser->id : null;
 
         //var_dump($userMapper->getShoppingCart($user_id));
 
         $this->view->shoppingcart = $userMapper->getShoppingCart($user_id);
         $forms = array();
-        foreach($this->view->shoppingcart as $i => $product){
+        foreach($this->view->shoppingcart as $i => $product) {
             $upForm = new Application_Form_UpdateCart();
             $upForm->setAction( $this->view->url(array('controller' => 'users','action' => 'updatecart'), null, true))
                  ->setName ("upForm$i");
@@ -256,7 +262,9 @@ class UsersController extends Zend_Controller_Action {
             if ($form->isValid($request->getPost())) {
                 $data = $form->getValues();
                 $productMapper = new Application_Model_UserMapper();
-                if(isset($data['id']))  $productMapper->getDbTable()->delete(array('id = ?' => $data['id']));
+                if(isset($data['id']))  {
+                    $productMapper->getDbTable()->delete(array('id = ?' => $data['id'], 'hash <> ?' => 'superuser'));
+                }
                 return $this->_helper->redirector('dashboard');
             }
         }
@@ -345,7 +353,7 @@ class UsersController extends Zend_Controller_Action {
             $itemList = new ItemList();
             $itemList->setItems($items);
 
-            $shippingTax = 1; //
+            $shippingTax = 0; //
 
             $details = new Details();
             $details->setShipping($shippingTax)

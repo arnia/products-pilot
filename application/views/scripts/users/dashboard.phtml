@@ -128,7 +128,7 @@
                                 </td>
                                 <td> <?php echo $product->name ?> </td>
                                 <td> <?php echo $product->getCategoryName() ?> </td>
-                                <td> <?php echo number_format($product->price, 2) ?></td>
+                                <td> <?php echo $product->currency ?></td>
                                 <td> <a href="<?php echo RUPLOADS_DATA . '/' . $product->file; ?>" download> <?php echo $product->file ?> </a></td>
                                 <td> <a href="<?php echo $editPath?>"><img width="150px" src = "<?php if ($product->image) echo RUPLOADS_IMAGES . '/' . $product->image; else echo IMAGE_NOT_FOUND ?>" ></a>  </td>
                                 <td> <?php echo substr($product->description,0,20) ?></td>
@@ -177,6 +177,93 @@
                                     <td><?php echo $order->getCreateDate() ?></td>
                                 </tr>
                             <?php } ?>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.table-responsive -->
+            </div>
+            <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
+    </div>
+    <!-- /.col-lg-6 -->
+</div>
+<!-- /.row -->
+<div class="row">
+    <div class="col-lg-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Currencies
+            </div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Code</th>
+                            <th>Rate</th>
+                            <th>Defaut</th>
+                            <th>Active</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach($this->currencies as $i => $currency) {
+                                $editPath = $this->url(array('controller' => 'currencies','action' => 'save', 'id' => $currency->id), null, true);?>
+                            <tr>
+                                <td> <a href="<?php echo $editPath ?>"><?php echo $currency->id ?></a></td>
+                                <td> <?php echo $currency->code ?> </td>
+                                <td> <?php echo number_format($currency->rate, 4) ?></td>
+                                <td>
+                                    <?php if($currency->def) { ?>
+                                        <span class="glyphicon glyphicon-ok" aria-hidden="true" ></span>
+                                    <?php } else { ?>
+                                        <span class="glyphicon glyphicon-minus"></span>
+                                    <?php } ?>
+                                </td>
+                                <td>
+                                    <?php if($currency->active) { ?>
+                                        <span class="glyphicon glyphicon-ok" aria-hidden="true" ></span>
+                                    <?php } else { ?>
+                                        <span class="glyphicon glyphicon-minus"></span>
+                                    <?php } ?>
+                                </td>
+                            </tr>
+                        <?php } ?>
+
+                        </tbody>
+                    </table>
+                    <a href="<?php echo $this->url(array('controller' => 'currencies', 'action' => 'save'), null, true) ?>" class="btn btn-default">Add New</a>
+                    <a href="<?php echo $this->url(array('controller' => 'currencies', 'action' => 'updater'), null, true) ?>" class="btn btn-info">Update Rates</a>
+                </div>
+                <!-- /.table-responsive -->
+            </div>
+            <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
+    </div>
+    <!-- /.col-lg-6 -->
+    <div class="col-lg-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Orders
+            </div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <div class="table-responsive table-bordered">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>User Id</th>
+                            <th>State</th>
+                            <th>User Email</th>
+                            <th>Date Created</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
                         </tbody>
                     </table>
                 </div>

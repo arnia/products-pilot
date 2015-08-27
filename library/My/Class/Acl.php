@@ -24,6 +24,7 @@ class My_Class_Acl extends Zend_Acl
         $this->addResource(new Zend_Acl_Resource('error'));
         $this->addResource(new Zend_Acl_Resource('verify'));
         $this->addResource(new Zend_Acl_Resource('dashboard'));
+        $this->addResource(new Zend_Acl_Resource('currencies'));
 
         $this->allow('guest', 'index');
         $this->allow('guest', 'error');

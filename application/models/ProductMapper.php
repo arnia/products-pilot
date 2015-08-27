@@ -30,6 +30,7 @@ class Application_Model_ProductMapper
             'id'          => $product->id,
             'name'        => $product->name,
             'category_id' => $product->getCategoryId(),
+            'currency_id' => $product->getCurrencyId(),
             'price'       => $product->price,
             'file'        => $product->file,
             'image'       => $product->image,
@@ -58,34 +59,40 @@ class Application_Model_ProductMapper
         $product->setFile($row->file);
         $product->setImage($row->image);
         $product->setDescription($row->description);
+        $product->setCurrency($row->currency_id, $row->price);
         return $product;
     }
  
-    public function fetchAll()
+    public function fetchAll($userCurrencyId = null, $categoryId = null)
     {
-        $resultSet = $this->getDbTable()->fetchAll();
+        $resultSet = ($categoryId) ? $this->getDbTable()->fetchAll($this->getDbTable()->select()->where('category_id = ?', $categoryId)) : $this->getDbTable()->fetchAll();
         $entries   = array();
         foreach ($resultSet as $row) {
-            $entry = new Application_Model_Product();
+            $entry = new Application_Model_Product($row);
 
-            $entry->setId($row->id);
+            /*$entry->setId($row->id);
             $entry->setName($row->name);
             $entry->setPrice($row->price);
 
-            /*$db_adapter = $this->getDbTable()->getAdapter();
+            $db_adapter = $this->getDbTable()->getAdapter();
             $db = Zend_Db::factory('Mysqli',$db_adapter->getConfig());
-            $category = $db->fetchRow($db->select('name')->from('categories')->where('id = ?', $row->category_id));*/
+            $category = $db->fetchRow($db->select('name')->from('categories')->where('id = ?', $row->category_id));
 
             $entry->setCategoryId($row->category_id);
             $entry->setFile($row->file);
             $entry->setImage($row->image);
-            $entry->setDescription($row->description);
+            $entry->setDescription($row->description);*/
+
+
+            if($userCurrencyId) $entry->setCurrencyExchanged($row->currency_id, $row->price, $userCurrencyId);
+            else $entry->setCurrency($row->currency_id, $row->price);
+
             $entries[] = $entry;
         }
         return $entries;
     }
 
-    public function getProductById($id){
+    public function getProductById($id, $userCurrencyId = null){
         //$row = $this->getDbTable()->find($id);
         //$row = $row[0];
         $row = $this->getDbTable()->fetchRow($this->getDbTable()->select()->where('id = ?', $id));
@@ -94,13 +101,8 @@ class Application_Model_ProductMapper
         }
         $product = new Application_Model_Product($row);
 
-       /* $product->setId($row->id);
-        $product->setName($row->name);
-        $product->setCategoryId($row->category_id);
-        $product->setFile($row->file);
-        $product->setPrice($row->price);
-        $product->setImage($row->image);
-        $product->setDescription($row->description);*/
+        if($userCurrencyId) $product->setCurrencyExchanged($row->currency_id, $row->price, $userCurrencyId);
+        else $product->setCurrency($row->currency_id, $row->price);
 
         return $product;
     }

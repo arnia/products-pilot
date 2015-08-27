@@ -1,10 +1,19 @@
+create table if not exists currencies (
+    id int(10) primary key auto_increment,
+    code varchar(3) not null unique,
+    rate float(10,4) not null,
+    def boolean not null default false,
+    active boolean not null default true
+);
 
 create table if not exists users (
     id int(10) primary key auto_increment,
     email varchar(32) not null unique,
     password varchar(32) not null,
+    currency_id int(10),
     hash varchar(32) not null,
-    verified boolean default false not null
+    verified boolean default false not null,
+    foreign key (currency_id) references currencies(id) on delete set null on update cascade
 );
 
 create table if not exists admins (
@@ -17,18 +26,20 @@ create table if not exists admins (
 
 create table if not exists categories(
     id int(10) primary key auto_increment,
-     name varchar(256)
+    name varchar(256)
 );
 
 create table if not exists products(
     id int(10) primary key auto_increment,
     name varchar(256) not null,
     category_id int(10),
+    currency_id int(10),
     price float(10,2) not null,
     file varchar(256),
     image varchar(256),
     description text,
-    foreign key (category_id) REFERENCES categories(id) on delete set null on update cascade
+    foreign key (category_id) REFERENCES categories(id) on delete set null on update cascade,
+    foreign key (currency_id) references currencies(id) on delete set null on update cascade
 );
 
 create table if not exists mailsettings (
@@ -70,7 +81,8 @@ create table if not exists ordered_products (
 );
 
 
-insert into users values (1, 'admin@products-pilot.loc', '21232f297a57a5a743894a0e4a801fc3', 'superuser', 1);
-insert into admins(user_id) values (1);
 
+insert into currencies values (1, 'USD', 1, 1, 1);
+insert into users values (1, 'admin@products-pilot.loc','21232f297a57a5a743894a0e4a801fc3', 1, 'superuser', 1);
+insert into admins(user_id) values (1);
 insert into categories values (1, 'Hardware'),(2, 'Software'),(3, 'Book'),(4, 'Movie');

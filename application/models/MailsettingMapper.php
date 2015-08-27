@@ -71,14 +71,14 @@ class Application_Model_MailsettingMapper
         return $entries;
     }
 
-    public function save(Application_Model_Mailsetting $product)
+    public function save(Application_Model_Mailsetting $setting)
     {
         $data = array(
-            'id'          => $product->id,
-            'smtp_config' => $product->getJsonConfig(),
+            'id'          => $setting->id,
+            'smtp_config' => $setting->getJsonConfig(),
         );
 
-        if (null === ($id = $product->getId())) {
+        if (null === ($id = $setting->getId())) {
             unset($data['id']);
             $this->getDbTable()->insert($data);
         } else {

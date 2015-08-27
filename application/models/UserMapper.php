@@ -26,9 +26,10 @@ class Application_Model_UserMapper
 
     public function insert(Application_Model_User $user){
         $data = array(
-            'email'     => $user->email,
-            'password'  => $user->password,
-            'hash'      => $user->hash,
+            'email'         => $user->email,
+            'password'      => $user->password,
+            'currency_id'   => $user->getCurrencyId(),
+            'hash'          => $user->hash,
         );
         return $this->getDbTable()->insert($data);
     }
@@ -118,5 +119,17 @@ class Application_Model_UserMapper
         $db_adapter = $this->getDbTable()->getAdapter();
         $db = Zend_Db::factory('Mysqli',$db_adapter->getConfig());
         $db->insert('admins', array('user_id' => $user_id));
+    }
+
+    public function find($id) {
+        $result = $this->getDbTable()->find($id);
+
+        if (0 == count($result)) {
+            return;
+        }
+        $row = $result->current();
+        $category = new Application_Model_User($row);
+
+        return $category;
     }
 }

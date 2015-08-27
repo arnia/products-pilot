@@ -2,7 +2,18 @@
 
 class Application_Model_Category {
     private $id;
-    private  $name;
+    private $name;
+
+    public function __construct($params = NULL) {
+
+        if (isset($params['id']) && !empty($params['id'])) {
+            $this->id = $params['id'];
+        }
+        if (isset($params['name']) && !empty($params['name'])) {
+            $this->name = $params['name'];
+        }
+
+    }
 
     public function __set($name, $value)
     {
