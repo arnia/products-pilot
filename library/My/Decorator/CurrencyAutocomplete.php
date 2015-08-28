@@ -53,7 +53,7 @@ class My_Decorator_CurrencyAutocomplete extends Zend_Form_Decorator_Abstract
             %s ";
         $this->_format .= "<datalist id = 'currencies' >";
         foreach( $currencies as $currency ) {
-            $code = $currency->getCode();
+            $code = $currency->code;
             $this->_format .= "<option value = '$code' >";
         }
         $this->_format .= "</datalist></div></div>";

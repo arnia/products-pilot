@@ -59,12 +59,13 @@ class Application_Form_SignUp extends Zend_Form {
 
         // Add code field
         $input = new Zend_Form_Element_Text('currency_code',array(
-            'required'   => true,
-            'label'      => 'Currency Code:',
-            'id'         => 'currency_code',
-            'placeholder'=> 'Example USD',
-            'class'      => 'form-control',
-            'list'       => 'currencies',
+            'required'      => true,
+            'label'         => 'Currency Code:',
+            'id'            => 'currency_code',
+            'placeholder'   => 'Example USD',
+            'class'         => 'form-control',
+            'list'          => 'currencies',
+            'autocomplete'  => 'off',
         ));
         $validator = new Zend_Validate_StringLength(array('max' => 3));
         $input->addValidators(array($validator,new Zend_Validate_NotEmpty()));

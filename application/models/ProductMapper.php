@@ -30,7 +30,6 @@ class Application_Model_ProductMapper
             'id'          => $product->id,
             'name'        => $product->name,
             'category_id' => $product->getCategoryId(),
-            'currency_id' => $product->getCurrencyId(),
             'price'       => $product->price,
             'file'        => $product->file,
             'image'       => $product->image,
@@ -68,7 +67,7 @@ class Application_Model_ProductMapper
         $resultSet = ($categoryId) ? $this->getDbTable()->fetchAll($this->getDbTable()->select()->where('category_id = ?', $categoryId)) : $this->getDbTable()->fetchAll();
         $entries   = array();
         foreach ($resultSet as $row) {
-            $entry = new Application_Model_Product($row);
+            $entry = new Application_Model_Product($row, $userCurrencyId);
 
             /*$entry->setId($row->id);
             $entry->setName($row->name);
@@ -83,10 +82,6 @@ class Application_Model_ProductMapper
             $entry->setImage($row->image);
             $entry->setDescription($row->description);*/
 
-
-            if($userCurrencyId) $entry->setCurrencyExchanged($row->currency_id, $row->price, $userCurrencyId);
-            else $entry->setCurrency($row->currency_id, $row->price);
-
             $entries[] = $entry;
         }
         return $entries;
@@ -99,10 +94,7 @@ class Application_Model_ProductMapper
         if (0 == count($row)) {
             return;
         }
-        $product = new Application_Model_Product($row);
-
-        if($userCurrencyId) $product->setCurrencyExchanged($row->currency_id, $row->price, $userCurrencyId);
-        else $product->setCurrency($row->currency_id, $row->price);
+        $product = new Application_Model_Product($row, $userCurrencyId);
 
         return $product;
     }

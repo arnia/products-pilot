@@ -5,6 +5,7 @@ class Application_Model_Order
 
     private $id;
     private $user_id;
+    private $transaction_id;
     private $state;
     private $email;
     private $create_date;
@@ -27,6 +28,9 @@ class Application_Model_Order
         if (isset($params['create_date']) && !empty($params['create_date'])) {
             $this->create_date = $params['create_date'];
         }
+        if (isset($params['transaction_id']) && !empty($params['transaction_id'])) {
+            $this->transaction_id = $params['transaction_id'];
+        }
     }
 
 
@@ -47,6 +51,23 @@ class Application_Model_Order
         }
         return $this->$method();
     }
+
+    /**
+     * @return mixed
+     */
+    public function getTransactionId()
+    {
+        return $this->transaction_id;
+    }
+
+    /**
+     * @param mixed $transaction_id
+     */
+    public function setTransactionId($transaction_id)
+    {
+        $this->transaction_id = $transaction_id;
+    }
+
 
     /**
      * @return mixed

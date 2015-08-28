@@ -23,6 +23,7 @@ class UsersController extends Zend_Controller_Action {
     const COUNT_CART = 'countCart';
     const ADD_TO_CART = 'addToCart';
     const PROCESS_PAYMENT = 'processPayment';
+    const STATE_UPDATE = 'stupdate';
 
 
     public function indexAction() {
@@ -32,6 +33,7 @@ class UsersController extends Zend_Controller_Action {
     public function dashboardAction() {
 
         $this->view->headScript()->appendFile(JS_DIR . '/' . self::VALIDATE_FORM . '.js');
+        $this->view->headScript()->appendFile(JS_DIR . '/' . self::STATE_UPDATE . '.js');
         $auth = Zend_Auth::getInstance();
         if ($auth->hasIdentity()) {
             $currentUser = $auth->getIdentity();
@@ -176,11 +178,12 @@ class UsersController extends Zend_Controller_Action {
         $auth = Zend_Auth::getInstance();
         $currentUser = null;
         if($auth->hasIdentity()) $currentUser = $auth->getIdentity();
-        $user_id = ($currentUser) ? $currentUser->id : null;
 
         //var_dump($userMapper->getShoppingCart($user_id));
-
-        $this->view->shoppingcart = $userMapper->getShoppingCart($user_id);
+        $auxItem = new Application_Model_CartItem();
+        $auxItem->getCurrency()->setService(new My_Class_FakeService());
+        $this->view->total = $auxItem->getCurrency();
+        $this->view->shoppingcart = $userMapper->getShoppingCart($currentUser);
         $forms = array();
         foreach($this->view->shoppingcart as $i => $product) {
             $upForm = new Application_Form_UpdateCart();
@@ -312,18 +315,20 @@ class UsersController extends Zend_Controller_Action {
 
         $auth = Zend_Auth::getInstance();
         if($auth->hasIdentity()) {
-            $user_id = $auth->getIdentity()->id;
+            $currentUser = $auth->getIdentity();
             $userMapper = new Application_Model_UserMapper();
             $db_adapter = $userMapper->getDbTable()->getAdapter();
             $db = Zend_Db::factory('Mysqli',$db_adapter->getConfig());
 
-            $results = $userMapper->getShoppingCart($user_id);
-            $user = $userMapper->getDbTable()->find($user_id)->current();
+            $results = $userMapper->getShoppingCart($currentUser);
+            $user = $userMapper->getDbTable()->find($currentUser->id)->current();
+            $currencyMapper = new Application_Model_CurrencyMapper();
+            $defaultCurrency = $currencyMapper->getDefaultCurrency();
 
             $data = array(
-                'user_id'       => $user_id,
-                'state'         => 'created',
-                'email'         => $user->email,
+                'user_id'           => $currentUser->id,
+                'state'             => 'created',
+                'email'             => $user->email,
             );
             $db->insert('orders', $data);
             $lastOrderId = $db->lastInsertId('orders', 'id');
@@ -333,18 +338,19 @@ class UsersController extends Zend_Controller_Action {
             foreach($results as $i => $result) {
                 $item = new Item();
                 $item->setName($result->name)
-                    ->setCurrency('USD')
+                    ->setCurrency($defaultCurrency->code)
                     ->setQuantity($result->quantity)
                     ->setSku($i + 1) // Similar to `item_number` in Classic API
                     ->setPrice($result->price);
                     //->setDescription($result->c_id);
                 $db->insert('ordered_products', array(
-                    'product_id' => $result->id,
-                    'name' => $result->name,
-                    'category_id' => $result->c_id,
-                    'price' => $result->price,
-                    'quantity' => $result->quantity,
-                    'order_id' => $lastOrderId));
+                    'product_id'    => $result->id,
+                    'name'          => $result->name,
+                    'category_id'   => $result->getCategoryId(),
+                    'currency'      => $defaultCurrency->code,
+                    'price'         => $result->price,
+                    'quantity'      => $result->quantity,
+                    'order_id'      => $lastOrderId));
 
                 $items[] = $item;
                 $subTotal += $result->quantity * (float)number_format($result->price,2);
@@ -362,7 +368,7 @@ class UsersController extends Zend_Controller_Action {
             $total = $shippingTax + $subTotal;
 
             $amount = new Amount();
-            $amount->setCurrency("USD")
+            $amount->setCurrency($defaultCurrency->code)
                 ->setTotal($total)
                 ->setDetails($details);
 
@@ -437,16 +443,15 @@ class UsersController extends Zend_Controller_Action {
 
                 $sale = Sale::get($saleId, $apiContext);
 
-
-                //var_dump($payment, $sale);
+                //var_dump($transactions[0], $sale);
                 $order_id = $transactions[0]->getCustom();
 
                 $userMapper = new Application_Model_UserMapper();
                 $db_adapter = $userMapper->getDbTable()->getAdapter();
                 $db = Zend_Db::factory('Mysqli',$db_adapter->getConfig());
-
                 $data = array(
                     'state'         => $sale->getState(),
+                    'transaction_id'=> $saleId,
                 );
 
                 $db->update('orders', $data, array('id = ?' => $order_id));
@@ -455,11 +460,10 @@ class UsersController extends Zend_Controller_Action {
                 $db->delete('shoppingcarts',array('user_id = ?' => $row['user_id']));
 
                 $this->_helper->getHelper('FlashMessenger')->addMessage('Order Complete', 'success');
-                return $this->_helper->redirector('mycart');
             };
         }
         else {
-            $this->_helper->getHelper('FlashMessenger')->addMessage('Yout close the payment', 'error');
+            $this->_helper->getHelper('FlashMessenger')->addMessage('You close the payment', 'error');
         }
         return $this->_helper->redirector('mycart');
     }

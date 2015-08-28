@@ -161,7 +161,8 @@
                         <thead>
                         <tr>
                             <th>ID</th>
-                            <th>User Id</th>
+                            <th>User ID</th>
+                            <th>Transaction ID</th>
                             <th>State</th>
                             <th>User Email</th>
                             <th>Date Created</th>
@@ -172,13 +173,15 @@
                                 <tr>
                                     <td><?php echo $order->id ?></td>
                                     <td><?php echo $order->getUserId() ?></td>
-                                    <td><?php echo $order->state ?></td>
+                                    <td><?php echo $order->getTransactionId() ?></td>
+                                    <td id = "<?php echo 'stateId' . $order->id ?>"><?php echo $order->state ?></td>
                                     <td><?php echo $order->email ?></td>
                                     <td><?php echo $order->getCreateDate() ?></td>
                                 </tr>
                             <?php } ?>
                         </tbody>
                     </table>
+                    <a class="btn btn-info" id = "upButton" onclick = "stupdate()">Update Order States</a>
                 </div>
                 <!-- /.table-responsive -->
             </div>
@@ -266,6 +269,7 @@
 
                         </tbody>
                     </table>
+                    <a href="/orders/stupdate" class="btn btn-default">test update state</a>
                 </div>
                 <!-- /.table-responsive -->
             </div>

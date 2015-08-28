@@ -17,7 +17,6 @@
         </thead>
         <tbody>
         <?php
-        $total = 0;
         foreach($this->shoppingcart as $i => $product) {
             ?>
             <tr>
@@ -35,24 +34,22 @@
                         <span class="glyphicon glyphicon-remove" style="color:red;margin-left:10px;"></span>
                     </a>
                 </td>
-                <td> <?php echo number_format((float)$product->price,2,'.','') ?></td>
+                <td> <?php echo $product->currency ?></td>
             </tr>
             <?php
-            $total += ($product->price * $product->quantity);
+            $this->total->add($product->price * $product->quantity);
         }
         ?>
         </tbody>
     </table>
-    <div class="panel-footer"><p class="text-right" style="margin-right:130px;font-weight: bold;" >Total price: <?php echo number_format((float)$total,2,'.','') ?></p></div>
+    <div class="panel-footer"><p class="text-right" style="margin-right:130px;font-weight: bold;" >Total price: <?php echo $this->total ?></p></div>
 </div>
 
 <a href="#"><img src="https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif" align="right" style="margin-left:7px;" onclick = "processPayment()" ></a>
 <?php } else  echo "Your shopping cart is empty !" ?>
 
 <div id = "divButton" >
-    <!--<button class="btn btn-lg btn-info">
-        <span class="glyphicon glyphicon-refresh spinning"></span> Processing...
-    </button>-->
+
 </div>
 
 <hr>

@@ -201,7 +201,6 @@ class ProductsController extends Zend_Controller_Action {
                     $productMapper->save($product);
                     return $this->_helper->redirector('viewall');
                 }
-//                return $this->redirect()->toRoute('upload-form/success');
             }
         }
 
@@ -269,11 +268,12 @@ class ProductsController extends Zend_Controller_Action {
 
         $select->addDecorator($decoratorField);
         $elements[] = $select;
-
+        $currencyMapper = new Application_Model_CurrencyMapper();
+        $currency = $currencyMapper->getDefaultCurrency();
         // Add Price field
         $input = new Zend_Form_Element_Text('price',array(
             'required'   => true,
-            'label'      => 'Price:',
+            'label'      => 'Price in ' . $currency->getCode() .':',
             'id'         => 'price',
             'placeholder'=> 'Type something..',
             'value'      =>  number_format((float)$product->price, 2),
@@ -291,25 +291,6 @@ class ProductsController extends Zend_Controller_Action {
         $input->addDecorator($decoratorField);
         $elements[] = $input;
 
-        // Add ccurrency_id field
-        $select = new Zend_Form_Element_Select('currency_id',array(
-            'required'   => true,
-            'label'      => 'Currency Code:',
-            'id'         => 'currency_id',
-            'class'      => 'form-control',
-        ));
-
-        $currencyMapper = new Application_Model_CurrencyMapper();
-        $currencies = $currencyMapper->fetchAllActive();
-        foreach($currencies as $currency){
-            $select->addMultiOption($currency->getId(), $currency->getCode());
-        }
-        // set selected option
-        $validator = new Zend_Validate_StringLength(array('max' => 3));
-        $select->addValidators(array($validator,new Zend_Validate_NotEmpty()));
-        $select->setValue($product->getCurrencyId());
-        $select->addDecorator($decoratorField);
-        $elements[] = $select;
 
 
         if($id) {

@@ -48,7 +48,13 @@ class CurrenciesController  extends Zend_Controller_Action
                 $currency->setId($id);
                 $currencyMapper = new Application_Model_CurrencyMapper();
                 //var_dump($data, $currency);
-                $currencyMapper->save($currency);
+                try {
+                    $currencyMapper->save($currency);
+                    if($currency->def) $currencyMapper->updater();
+                } catch (Exception $e) {
+                    $this->_helper->getHelper('FlashMessenger')->addMessage($e->getMessage(), 'error');
+                }
+
                 return $this->_helper->redirector('dashboard', 'users');
             }
         } else {
@@ -78,29 +84,10 @@ class CurrenciesController  extends Zend_Controller_Action
 
     public function updaterAction()
     {
-        $XML=simplexml_load_file("http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml");
-        //the file is updated daily between 2.15 p.m. and 3.00 p.m. CET
         $currencyMapper = new Application_Model_CurrencyMapper();
-        $def_currency = $currencyMapper->getDefaultCurrency();
-        $currencies = array();
-        foreach($XML->Cube->Cube->Cube as $rate){
-            //var_dump((string)$rate["currency"], (string)$rate["rate"]);
-            $currencies[(string)$rate["currency"]] = (float)$rate["rate"];
-        }
-
-        $currencies['EUR'] = 1.0;
-
-        if($def_currency != 'EUR') {
-            $rap = 1/$currencies[$def_currency->code];
-            foreach ($currencies as &$currency) {
-                $currency *= $rap;
-                //var_dump($currency);
-            }
-        }
-        $currencyMapper->updater($currencies);
+        $currencyMapper->updater();
         //var_dump($currencies);
         $this->_helper->redirector('dashboard', 'users');
     }
-
 }
 

@@ -72,11 +72,7 @@ class Application_Model_UserMapper
                                                                       ->setIntegrityCheck(false));
         $entries   = array();
         foreach ($resultSet as $row) {
-            $entry = new Application_Model_User();
-            $entry->setId($row->id);
-            $entry->setEmail($row->email);
-            $entry->setVerified($row->verified);
-            $entry->setAdminId($row->admin_id);
+            $entry = new Application_Model_User($row);
             $entries[] = $entry;
         }
         return $entries;
@@ -91,20 +87,24 @@ class Application_Model_UserMapper
         return $user;
     }
 
-    public function getShoppingCart($user_id){
+    public function getShoppingCart($user) {
 
-        $result = $this->getDbTable()->fetchAll($this->getDbTable()->select()
+        $results = $this->getDbTable()->fetchAll($this->getDbTable()->select()
                                                          ->from(array('p' => 'products'),
                                                              array('id', 'name', 'price'))
                                                          ->join(array('c' => 'categories'),
                                                              'c.id = p.category_id',
-                                                             array('category' => 'c.name', 'c_id' => 'c.id'))
+                                                             array('category' => 'c.name', 'category_id' => 'c.id'))
                                                          ->join(array('s' => 'shoppingcarts'),
                                                              's.product_id = p.id',
                                                              array('quantity' => 's.quantity'))
-                                                         ->where('s.user_id = ?', $user_id)
+                                                         ->where('s.user_id = ?', $user->id)
                                                          ->setIntegrityCheck(false));
-        return $result;
+        $cartItems = array();
+        foreach ($results as $result) {
+            $cartItems[] = new Application_Model_CartItem($result, $user->currency_id);
+        }
+        return $cartItems;
     }
 
 

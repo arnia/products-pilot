@@ -17,15 +17,19 @@ class Application_Form_SaveCurrency extends Zend_Form {
 
         // Add code field
         $input = new Zend_Form_Element_Text('code',array(
-            'required'   => true,
-            'label'      => 'Currency Code:',
-            'id'         => 'code',
-            'placeholder'=> '..',
-            'class'      => 'form-control',
+            'required'      => true,
+            'label'         => 'Currency Code:',
+            'id'            => 'currency_code',
+            'placeholder'   => 'Example USD',
+            'class'         => 'form-control',
+            'list'          => 'currencies',
+            'autocomplete'  => 'off',
         ));
         $validator = new Zend_Validate_StringLength(array('max' => 3));
         $input->addValidators(array($validator,new Zend_Validate_NotEmpty()));
-        $input->addDecorator($decoratorField);
+        $currencyMapper = new Application_Model_CurrencyMapper();
+        $decoratorCurrency = new My_Decorator_CurrencyAutocomplete(null, $currencyMapper->getAvailableCurrencies());
+        $input->addDecorator($decoratorCurrency);
         $elements[] = $input;
 
         //add rate file
@@ -92,6 +96,5 @@ class Application_Form_SaveCurrency extends Zend_Form {
             )
         );
     }
-
-
 }
+

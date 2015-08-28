@@ -1,17 +1,16 @@
 <?php
 
-class Application_Model_Product {
+class Application_Model_CartItem {
 
     private $id;
     private $name;
     private $category_id;
+    private $category;
     private $price;
-    private $file;
-    private $image;
-    private $description;
+    private $quantity;
     private $currency;
 
-    public function __construct($params = NULL, $userCurrencyId = null){
+    public function __construct($params = NULL, $userCurrencyId = null) {
 
         if(isset($params['id']) && !empty($params['id'])){
             $this->id = $params['id'];
@@ -22,17 +21,14 @@ class Application_Model_Product {
         if(isset($params['category_id']) && !empty($params['category_id'])){
             $this->category_id = $params['category_id'];
         }
+        if(isset($params['category']) && !empty($params['category'])){
+            $this->category = $params['category'];
+        }
         if(isset($params['price']) && !empty($params['price'])){
             $this->price = $params['price'];
         }
-        if(isset($params['file']) && !empty($params['file'])){
-            $this->file = $params['file'];
-        }
-        if(isset($params['image']) && !empty($params['image'])){
-            $this->image = $params['image'];
-        }
-        if(isset($params['description']) && !empty($params['description'])){
-            $this->description = $params['description'];
+        if(isset($params['quantity']) && !empty($params['quantity'])){
+            $this->quantity = $params['quantity'];
         }
         $this->setCurrency($this->price, $userCurrencyId);
     }
@@ -46,7 +42,7 @@ class Application_Model_Product {
         }
         $this->$method($value);
     }
- 
+
     public function __get($name)
     {
         $method = 'get' . $name;
@@ -100,6 +96,9 @@ class Application_Model_Product {
         $this->currency = $currency;
     }
 
+    /**
+     * @return mixed
+     */
     public function getId()
     {
         return $this->id;
@@ -148,6 +147,22 @@ class Application_Model_Product {
     /**
      * @return mixed
      */
+    public function getCategory()
+    {
+        return $this->category;
+    }
+
+    /**
+     * @param mixed $category
+     */
+    public function setCategory($category)
+    {
+        $this->category = $category;
+    }
+
+    /**
+     * @return mixed
+     */
     public function getPrice()
     {
         return $this->price;
@@ -160,60 +175,21 @@ class Application_Model_Product {
     {
         $this->price = $price;
     }
-    /**
-     * @return mixed
-     */
-    public function getFile()
-    {
-        return $this->file;
-    }
-
-    /**
-     * @param mixed $file
-     */
-    public function setFile($file)
-    {
-        $this->file = $file;
-    }
 
     /**
      * @return mixed
      */
-    public function getImage()
+    public function getQuantity()
     {
-        return $this->image;
+        return $this->quantity;
     }
 
     /**
-     * @param mixed $image
+     * @param mixed $quantity
      */
-    public function setImage($image)
+    public function setQuantity($quantity)
     {
-        $this->image = $image;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getDescription()
-    {
-        return $this->description;
-    }
-
-    /**
-     * @param mixed $description
-     */
-    public function setDescription($description)
-    {
-        $this->description = $description;
-    }
-
-    public function getCategoryName(){
-        if(!$this->category_id) return null;
-        $categoryMapper = new Application_Model_CategoryMapper();
-        $category = $categoryMapper->find($this->category_id);
-
-        return $category->name;
+        $this->quantity = $quantity;
     }
 
 }
