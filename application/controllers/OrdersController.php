@@ -7,6 +7,8 @@ class OrdersController extends Zend_Controller_Action{
     }
 
     public function stupdateAction() {
+        require_once (APPLICATION_PATH . "/../library/My/paypal_bootstrap.php");
+
         $orderMapper = new Application_Model_OrderMapper();
         $orders = $orderMapper->fetchAll();
         $ordStates = array();
@@ -14,7 +16,7 @@ class OrdersController extends Zend_Controller_Action{
             if($order->state != 'completed' && $order->getTransactionId()) {
                 $ordStates[] = array(
                     'id'    => $order->id,
-                    'state' => $orderMapper->stupdate($order->getTransactionId()),
+                    'state' => $orderMapper->stupdate($order->getTransactionId(), $apiContext),
                 );
             }
         }

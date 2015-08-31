@@ -27,7 +27,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 		}
 
 	}
-
+/*
 	protected function _initRoutes()
 	{
 
@@ -41,7 +41,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 
 		$router->addRoutes($routesArray);
 
-	}
+	}*/
 
 	protected function _initPlugins()
 	{

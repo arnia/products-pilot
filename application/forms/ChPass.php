@@ -61,7 +61,7 @@ class Application_Form_ChPass extends Zend_Form {
         $input = new Zend_Form_Element_Submit('submit',array(
             'Label'      => '',
             'class'      => 'btn btn-default',
-            'value'      => 'SignUp',
+            'value'      => 'Update',
         ));
         $input->addDecorator($decoratorField);
         $elements[] = $input;

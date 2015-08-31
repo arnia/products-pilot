@@ -306,7 +306,7 @@ class UsersController extends Zend_Controller_Action {
 
         //Zend_Loader::loadFile('paypal_bootstrap.php', APPLICATION_PATH . "/../library/My/", true);
 
-        require (APPLICATION_PATH . "/../library/My/paypal_bootstrap.php");
+        require_once (APPLICATION_PATH . "/../library/My/paypal_bootstrap.php");
 
         $error = false;
         $approvalLink = null;
@@ -424,7 +424,7 @@ class UsersController extends Zend_Controller_Action {
             $token = $_GET['token'];
             $PayerID = $_GET['PayerID'];
 
-            require (APPLICATION_PATH . "/../library/My/paypal_bootstrap.php");
+            require_once (APPLICATION_PATH . "/../library/My/paypal_bootstrap.php");
 
             $payment = Payment::get($paymentId, $apiContext);
             $execution = new PaymentExecution();

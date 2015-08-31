@@ -199,7 +199,7 @@ class ProductsController extends Zend_Controller_Action {
                     $product = new Application_Model_Product($data);
 
                     $productMapper->save($product);
-                    return $this->_helper->redirector('viewall');
+                    return $this->_helper->redirector('dashboard', 'users');
                 }
             }
         }

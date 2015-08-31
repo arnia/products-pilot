@@ -1,15 +1,5 @@
 <?php
-use PayPal\Auth\OAuthTokenCredential;
-use PayPal\Api\Amount;
-use PayPal\Api\Details;
-use PayPal\Api\Item;
-use PayPal\Api\ItemList;
-use PayPal\Api\Payer;
-use PayPal\Api\Payment;
-use PayPal\Api\RedirectUrls;
-use PayPal\Api\Transaction;
-use PayPal\Api\PaymentExecution;
-use PayPal\Rest\ApiContext;
+
 use PayPal\Api\Sale;
 
 class Application_Model_OrderMapper {
@@ -55,9 +45,8 @@ class Application_Model_OrderMapper {
         return $order;
     }
 
-    public function stupdate($transactionId) {
+    public function stupdate($transactionId, $apiContext) {
         if($transactionId) {
-            require(APPLICATION_PATH . "/../library/My/paypal_bootstrap.php");
 
             $sale = Sale::get($transactionId, $apiContext);
 
